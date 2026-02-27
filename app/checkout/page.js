@@ -217,7 +217,7 @@ export default function CheckoutPage() {
           >
             CHECKOUT
           </span>
-          <div className="max-w-7xl mx-auto px-6 md:px-14 pt-36 pb-14 relative z-10 animate-fade-up">
+          <div className="max-w-7xl mx-auto px-6 md:px-14 pt-24 md:pt-36 pb-10 md:pb-14 relative z-10 animate-fade-up">
             <span className="flex items-center gap-3 text-[#e8530a] text-xs tracking-[0.3em] uppercase mb-4">
               <span className="w-8 h-px bg-[#e8530a]" />
               Final Step
@@ -251,14 +251,14 @@ export default function CheckoutPage() {
 
         {cart.length > 0 && (
           <form onSubmit={handleSubmit} noValidate>
-            <div className="max-w-7xl mx-auto px-6 md:px-14 py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8">
+            <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 md:gap-8">
 
               {/* LEFT — Forms */}
               <div className="space-y-2">
 
                 {/* Contact Info */}
                 <div className="bg-[#111] border border-[#1a1a1a]">
-                  <div className="px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
+                  <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
                     <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">1</span>
                     <span
                       className="text-[#f5f0eb] tracking-[0.15em]"
@@ -267,8 +267,8 @@ export default function CheckoutPage() {
                       Contact Information
                     </span>
                   </div>
-                  <div className="px-8 py-8 space-y-5">
-                    <div className="flex gap-4">
+                  <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-5">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <Field name="firstName" label="First Name" placeholder="Jane" half />
                       <Field name="lastName"  label="Last Name"  placeholder="Smith" half />
                     </div>
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
 
                 {/* Payment */}
                 <div className="bg-[#111] border border-[#1a1a1a]">
-                  <div className="px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
+                  <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
                     <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">2</span>
                     <span
                       className="text-[#f5f0eb] tracking-[0.15em]"
@@ -294,13 +294,13 @@ export default function CheckoutPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="px-8 py-8 space-y-5">
+                  <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-5">
                     <Field
                       name="cardNumber" label="Card Number" placeholder="1234 5678 9012 3456"
                       format={formatCard} maxLength={19}
                     />
                     <Field name="cardName" label="Name on Card" placeholder="Jane Smith" />
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <Field
                         name="cardExpiry" label="Expiry Date" placeholder="MM/YY"
                         format={formatExpiry} maxLength={5} half
@@ -313,7 +313,7 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Security note */}
-                  <div className="px-8 pb-8">
+                  <div className="px-5 sm:px-8 pb-6 sm:pb-8">
                     <div className="flex items-center gap-2 text-[#888] text-xs font-light">
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

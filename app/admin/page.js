@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-// ─── DUMMY DATA ───────────────────────────────────────────────────────────────
 const DUMMY_PRODUCTS = [
   { id: 1, name: 'Air Max 270',        brand: 'Nike',        category: 'Running',    price: 180, stock: 24, image: '' },
   { id: 2, name: 'Ultra Boost 22',     brand: 'Adidas',      category: 'Running',    price: 190, stock: 12, image: '' },
@@ -26,9 +25,7 @@ const DUMMY_ORDERS = [
     id: '#SOLE-D4E5F6', customer: 'Sofia Kim', email: 'sofia@email.com',
     phone: '+1 (555) 987-6543', items: 1, total: 185, status: 'Processing', date: '2025-02-22',
     address: { line1: '8 Oak Avenue', line2: '', city: 'Los Angeles', state: 'CA', zip: '90001', country: 'United States' },
-    products: [
-      { name: '990v5 Made in USA', brand: 'New Balance', size: 8, color: 'grey', qty: 1, price: 185 },
-    ],
+    products: [{ name: '990v5 Made in USA', brand: 'New Balance', size: 8, color: 'grey', qty: 1, price: 185 }],
     payment: 'Mastercard ending 1234', notes: '',
   },
   {
@@ -46,18 +43,14 @@ const DUMMY_ORDERS = [
     id: '#SOLE-J1K2L3', customer: 'Amara Osei', email: 'amara@email.com',
     phone: '+233 24 000 1234', items: 1, total: 220, status: 'Pending', date: '2025-02-24',
     address: { line1: '3 Independence Ave', line2: '', city: 'Accra', state: 'Greater Accra', zip: 'GA-123', country: 'Ghana' },
-    products: [
-      { name: 'Air Jordan 1 Retro', brand: 'Jordan', size: 9, color: 'white', qty: 1, price: 220 },
-    ],
+    products: [{ name: 'Air Jordan 1 Retro', brand: 'Jordan', size: 9, color: 'white', qty: 1, price: 220 }],
     payment: 'Visa ending 5678', notes: '',
   },
   {
     id: '#SOLE-M4N5O6', customer: 'Lena Muller', email: 'lena@email.com',
     phone: '+49 151 12345678', items: 2, total: 300, status: 'Cancelled', date: '2025-02-24',
     address: { line1: 'Unter den Linden 5', line2: '', city: 'Berlin', state: '', zip: '10117', country: 'Germany' },
-    products: [
-      { name: 'Classic Leather', brand: 'Reebok', size: 7, color: 'white', qty: 2, price: 150 },
-    ],
+    products: [{ name: 'Classic Leather', brand: 'Reebok', size: 7, color: 'white', qty: 2, price: 150 }],
     payment: 'Mastercard ending 9999', notes: 'Cancelled by customer.',
   },
 ];
@@ -70,6 +63,14 @@ const STATUS_STYLES = {
   Processing: 'border-yellow-500/50 text-yellow-400',
   Pending:    'border-[#e8530a]/50 text-[#e8530a]',
   Cancelled:  'border-red-500/50 text-red-400',
+};
+
+const STATUS_DOT = {
+  Delivered:  'bg-green-400',
+  Shipped:    'bg-blue-400',
+  Processing: 'bg-yellow-400',
+  Pending:    'bg-[#e8530a]',
+  Cancelled:  'bg-red-400',
 };
 
 const inputClass = "w-full bg-[#0a0a0a] text-[#f5f0eb] px-4 py-3 text-sm border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none transition-colors placeholder:text-[#444]";
@@ -122,8 +123,7 @@ function LoginScreen({ onLogin }) {
             {error && <p className="text-red-400 text-xs tracking-wide">{error}</p>}
             <button type="submit" disabled={loading}
               className={"w-full py-3.5 text-xs tracking-[0.2em] uppercase font-medium transition-all cursor-pointer mt-2 " + (loading ? 'bg-[#2e2e2e] text-[#888]' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]')}
-              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
-            >
+              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}>
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-3 h-3 border border-[#888] border-t-transparent rounded-full animate-spin" />
@@ -175,14 +175,14 @@ function ProductModal({ product, onSave, onClose }) {
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center px-4">
       <div className="bg-[#111] border border-[#1a1a1a] w-full max-w-lg max-h-[90vh] overflow-y-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="h-0.5 bg-[#e8530a]" />
-        <div className="px-6 sm:px-8 py-5 sm:py-6 border-b border-[#1a1a1a] flex items-center justify-between">
+        <div className="px-6 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center justify-between">
           <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', letterSpacing: '0.1em', color: '#f5f0eb' }}>
             {isEdit ? 'Edit Product' : 'Add New Product'}
           </span>
-          <button onClick={onClose} className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">x</button>
+          <button onClick={onClose} className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer text-lg leading-none">x</button>
         </div>
-        <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-5">
-          <Field name="name"     label="Product Name"          placeholder="Air Max 270" />
+        <div className="px-6 sm:px-8 py-6 space-y-5">
+          <Field name="name" label="Product Name" placeholder="Air Max 270" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field name="brand"    label="Brand"    placeholder="Nike" />
             <Field name="category" label="Category" placeholder="Running" />
@@ -193,14 +193,13 @@ function ProductModal({ product, onSave, onClose }) {
           </div>
           <Field name="image" label="Image URL (optional)" placeholder="https://..." />
         </div>
-        <div className="px-6 sm:px-8 pb-6 sm:pb-8 flex gap-3">
+        <div className="px-6 sm:px-8 pb-6 flex gap-3">
           <button onClick={handleSave}
             className="flex-1 bg-[#e8530a] text-white py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer"
             style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}>
             {isEdit ? 'Save Changes' : 'Add Product'}
           </button>
-          <button onClick={onClose}
-            className="flex-1 border border-[#2e2e2e] text-[#888] py-3 text-xs tracking-[0.2em] uppercase hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
+          <button onClick={onClose} className="flex-1 border border-[#2e2e2e] text-[#888] py-3 text-xs tracking-[0.2em] uppercase hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
             Cancel
           </button>
         </div>
@@ -217,9 +216,7 @@ function DeleteConfirm({ name, onConfirm, onClose }) {
         <div className="h-0.5 bg-red-500" />
         <div className="px-8 py-10">
           <span className="text-4xl mb-4 block select-none">🗑️</span>
-          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#f5f0eb', letterSpacing: '0.1em' }}>
-            Delete Product?
-          </h3>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#f5f0eb', letterSpacing: '0.1em' }}>Delete Product?</h3>
           <p className="text-[#888] text-sm font-light mt-2 mb-8">
             Are you sure you want to delete <span className="text-[#f5f0eb]">{name}</span>? This cannot be undone.
           </p>
@@ -235,24 +232,140 @@ function DeleteConfirm({ name, onConfirm, onClose }) {
 
 // ─── ORDER DETAIL MODAL ───────────────────────────────────────────────────────
 function OrderDetailModal({ order, onClose }) {
+  const handlePrint = () => {
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice ${order.id}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #111; padding: 48px; font-size: 13px; line-height: 1.5; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid #111; }
+          .logo { font-size: 2.5rem; font-weight: 900; letter-spacing: 0.05em; }
+          .logo span { color: #e8530a; }
+          .header-right { text-align: right; }
+          .header-right h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+          .header-right p { color: #666; font-size: 0.8rem; }
+          .status { display: inline-block; padding: 3px 10px; border-radius: 2px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 6px; background: #f5f5f5; }
+          .section { margin-bottom: 28px; }
+          .section-title { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: #e8530a; margin-bottom: 12px; font-weight: 600; }
+          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+          .info-box { background: #f9f9f9; padding: 12px 16px; }
+          .info-box .label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.2em; color: #999; margin-bottom: 3px; }
+          .info-box .value { font-size: 0.85rem; font-weight: 500; color: #111; }
+          .address-box { background: #f9f9f9; padding: 12px 16px; line-height: 1.8; }
+          table { width: 100%; border-collapse: collapse; }
+          thead tr { border-bottom: 1px solid #ddd; }
+          th { text-align: left; padding: 8px 12px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: #999; font-weight: 500; }
+          td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
+          .total-row td { border-top: 2px solid #111; border-bottom: none; font-weight: 700; font-size: 1rem; padding-top: 14px; }
+          .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; color: #aaa; font-size: 0.75rem; }
+          @media print { body { padding: 24px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">SOLE<span>.</span></div>
+          <div class="header-right">
+            <h2>Invoice / Order Receipt</h2>
+            <p>${order.id}</p>
+            <p>Date: ${order.date}</p>
+            <span class="status">${order.status}</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Customer Information</div>
+          <div class="grid-2">
+            <div class="info-box"><div class="label">Full Name</div><div class="value">${order.customer}</div></div>
+            <div class="info-box"><div class="label">Email</div><div class="value">${order.email}</div></div>
+            <div class="info-box"><div class="label">Phone</div><div class="value">${order.phone}</div></div>
+            <div class="info-box"><div class="label">Payment</div><div class="value">${order.payment}</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Delivery Address</div>
+          <div class="address-box">
+            ${order.address.line1}${order.address.line2 ? '<br>' + order.address.line2 : ''}<br>
+            ${order.address.city}${order.address.state ? ', ' + order.address.state : ''} ${order.address.zip}<br>
+            ${order.address.country}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Items Ordered</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Qty</th>
+                <th style="text-align:right">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.products.map(p => `
+                <tr>
+                  <td><strong>${p.name}</strong><br><span style="color:#999;font-size:0.8rem">${p.brand}</span></td>
+                  <td>US ${p.size}</td>
+                  <td style="text-transform:capitalize">${p.color}</td>
+                  <td>${p.qty}</td>
+                  <td style="text-align:right">$${(p.price * p.qty).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td colspan="4">Order Total</td>
+                <td style="text-align:right">$${order.total.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        ${order.notes ? `<div class="section"><div class="section-title">Order Notes</div><div class="address-box">${order.notes}</div></div>` : ''}
+
+        <div class="footer">
+          <span>SOLE. — Premium Footwear</span>
+          <span>Printed ${new Date().toLocaleDateString()}</span>
+        </div>
+      </body>
+      </html>
+    `;
+    const win = window.open('', '_blank', 'width=800,height=900');
+    win.document.write(printContent);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center px-4">
       <div className="bg-[#111] border border-[#1a1a1a] w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="h-0.5 bg-[#e8530a]" />
 
         {/* Header */}
-        <div className="px-6 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center justify-between">
+        <div className="px-6 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center justify-between gap-4">
           <div>
             <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', letterSpacing: '0.1em', color: '#f5f0eb' }}>
               Order Details
             </span>
             <p className="text-[#e8530a] text-xs tracking-[0.15em] mt-0.5">{order.id}</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className={"text-[0.65rem] tracking-[0.1em] uppercase border px-2.5 py-1 " + (STATUS_STYLES[order.status] || 'border-[#2e2e2e] text-[#888]')}>
               {order.status}
             </span>
-            <button onClick={onClose} className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">x</button>
+            {/* Print button */}
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs tracking-[0.1em] uppercase border border-[#2e2e2e] text-[#888] hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer"
+              title="Print invoice"
+            >
+              🖨 Print
+            </button>
+            <button onClick={onClose} className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer text-lg leading-none">x</button>
           </div>
         </div>
 
@@ -270,7 +383,7 @@ function OrderDetailModal({ order, onClose }) {
               ].map(d => (
                 <div key={d.label} className="bg-[#0a0a0a] px-4 py-3">
                   <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#888] mb-1">{d.label}</p>
-                  <p className="text-[#f5f0eb] text-sm">{d.value}</p>
+                  <p className="text-[#f5f0eb] text-sm break-all">{d.value}</p>
                 </div>
               ))}
             </div>
@@ -296,7 +409,7 @@ function OrderDetailModal({ order, onClose }) {
               {order.products.map((p, i) => (
                 <div key={i} className="bg-[#0a0a0a] px-4 py-3 flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[#f5f0eb] text-sm font-medium truncate">{p.name}</p>
+                    <p className="text-[#f5f0eb] text-sm font-medium">{p.name}</p>
                     <p className="text-[#888] text-xs mt-0.5">
                       {p.brand} &middot; Size {p.size} &middot; {p.color} &middot; Qty {p.qty}
                     </p>
@@ -306,8 +419,7 @@ function OrderDetailModal({ order, onClose }) {
                   </span>
                 </div>
               ))}
-              {/* Total */}
-              <div className="flex items-center justify-between px-4 py-3 border-t border-[#2e2e2e] mt-1">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-[#2e2e2e]">
                 <span className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888]">Order Total</span>
                 <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#f5f0eb' }}>
                   ${order.total.toFixed(2)}
@@ -327,12 +439,15 @@ function OrderDetailModal({ order, onClose }) {
               <p className="text-[#f5f0eb] text-sm">{order.notes || 'None'}</p>
             </div>
           </div>
-
         </div>
 
-        <div className="px-6 sm:px-8 pb-6">
-          <button onClick={onClose}
-            className="w-full border border-[#2e2e2e] text-[#888] py-3 text-xs tracking-[0.2em] uppercase hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
+        <div className="px-6 sm:px-8 pb-6 flex gap-3">
+          <button onClick={handlePrint}
+            className="flex-1 bg-[#e8530a] text-white py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer"
+            style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}>
+            Print Invoice
+          </button>
+          <button onClick={onClose} className="flex-1 border border-[#2e2e2e] text-[#888] py-3 text-xs tracking-[0.2em] uppercase hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
             Close
           </button>
         </div>
@@ -386,8 +501,8 @@ export default function AdminPage() {
   };
 
   const stats = [
-    { label: 'Total Products', value: products.length, sub: products.filter(p => p.stock <= 5).length + ' low stock' },
-    { label: 'Total Orders',   value: orders.length,   sub: orders.filter(o => o.status === 'Pending').length + ' pending' },
+    { label: 'Total Products', value: products.length,   sub: products.filter(p => p.stock <= 5).length + ' low stock' },
+    { label: 'Total Orders',   value: orders.length,     sub: orders.filter(o => o.status === 'Pending').length + ' pending' },
     { label: 'Revenue',        value: '$' + orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + o.total, 0).toLocaleString(), sub: 'excl. cancelled' },
     { label: 'Avg Order',      value: '$' + Math.round(orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + o.total, 0) / orders.filter(o => o.status !== 'Cancelled').length), sub: 'per order' },
   ];
@@ -401,8 +516,7 @@ export default function AdminPage() {
           </span>
           <p className="text-[0.55rem] tracking-[0.3em] uppercase text-[#888] mt-0.5">Admin Portal</p>
         </div>
-        {/* Close button — mobile only */}
-        <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer text-lg">x</button>
+        <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer text-xl leading-none">x</button>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1">
         {[
@@ -438,8 +552,7 @@ export default function AdminPage() {
 
       <div className="min-h-screen bg-[#0a0a0a] flex" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-        {/* SIDEBAR — desktop fixed, mobile overlay */}
-        {/* Desktop */}
+        {/* Desktop sidebar */}
         <aside className="hidden lg:flex w-56 bg-[#111] border-r border-[#1a1a1a] fixed top-0 left-0 h-full flex-col z-40 shrink-0">
           <SidebarContent />
         </aside>
@@ -455,20 +568,18 @@ export default function AdminPage() {
         )}
 
         {/* MAIN */}
-        <div className="lg:ml-56 flex-1 flex flex-col min-h-screen">
+        <div className="lg:ml-56 flex-1 flex flex-col min-h-screen min-w-0">
 
           {/* Top bar */}
           <header className="sticky top-0 z-30 bg-[#0a0a0a]/95 backdrop-blur border-b border-[#1a1a1a] px-4 sm:px-6 lg:px-10 py-4">
-            <div className="flex items-center gap-3 justify-between">
-              <div className="flex items-center gap-3">
-                {/* Hamburger — mobile only */}
-                <button onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden flex flex-col gap-1.5 cursor-pointer p-1 shrink-0">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <button onClick={() => setSidebarOpen(true)} className="lg:hidden flex flex-col gap-1.5 cursor-pointer p-1 shrink-0">
                   <span className="block w-5 h-px bg-[#f5f0eb]" />
                   <span className="block w-5 h-px bg-[#f5f0eb]" />
                   <span className="block w-5 h-px bg-[#f5f0eb]" />
                 </button>
-                <div>
+                <div className="min-w-0">
                   <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.4rem', letterSpacing: '0.1em', color: '#f5f0eb' }}>
                     {activeTab === 'products' ? 'Products' : 'Orders'}
                   </h1>
@@ -477,17 +588,13 @@ export default function AdminPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="bg-[#111] text-[#f5f0eb] text-sm border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none px-3 py-2 w-32 sm:w-44 lg:w-52 placeholder:text-[#444] transition-colors"
-                />
+              <div className="flex items-center gap-2 shrink-0">
+                <input type="text" placeholder="Search..."
+                  value={search} onChange={e => setSearch(e.target.value)}
+                  className="bg-[#111] text-[#f5f0eb] text-sm border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none px-3 py-2 w-28 sm:w-44 lg:w-52 placeholder:text-[#444] transition-colors" />
                 {activeTab === 'products' && (
                   <button onClick={() => setProductModal('add')}
-                    className="bg-[#e8530a] text-white px-3 sm:px-5 py-2 text-xs tracking-[0.1em] sm:tracking-[0.15em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer whitespace-nowrap"
+                    className="bg-[#e8530a] text-white px-3 sm:px-5 py-2 text-xs tracking-[0.1em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer whitespace-nowrap"
                     style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}>
                     + Add
                   </button>
@@ -496,157 +603,198 @@ export default function AdminPage() {
             </div>
           </header>
 
-          <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6 fade-up">
+          <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 space-y-4 fade-up">
 
             {/* STATS */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               {stats.map(s => (
-                <div key={s.label} className="bg-[#111] border border-[#1a1a1a] px-4 sm:px-6 py-4 sm:py-5">
-                  <p className="text-[0.6rem] tracking-[0.25em] uppercase text-[#888] mb-2">{s.label}</p>
-                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)', color: '#f5f0eb', letterSpacing: '0.05em' }}>
-                    {s.value}
-                  </p>
+                <div key={s.label} className="bg-[#111] border border-[#1a1a1a] px-4 py-4">
+                  <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#888] mb-1">{s.label}</p>
+                  <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.3rem, 4vw, 2rem)', color: '#f5f0eb', letterSpacing: '0.05em' }}>{s.value}</p>
                   <p className="text-[#888] text-[0.65rem] mt-1 font-light">{s.sub}</p>
                 </div>
               ))}
             </div>
 
-            {/* PRODUCTS TAB */}
+            {/* PRODUCTS — table on desktop, cards on mobile */}
             {activeTab === 'products' && (
-              <div className="bg-[#111] border border-[#1a1a1a] overflow-x-auto">
-                <table className="w-full text-sm min-w-[560px]">
-                  <thead>
-                    <tr className="border-b border-[#1a1a1a]">
-                      {['Product', 'Brand', 'Category', 'Price', 'Stock', 'Actions'].map(h => (
-                        <th key={h} className="text-left px-4 sm:px-6 py-4 text-[0.6rem] tracking-[0.25em] uppercase text-[#888] font-normal">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1a1a1a]">
-                    {filteredProducts.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-16 text-[#888] text-sm font-light">No products found.</td></tr>
-                    ) : filteredProducts.map(p => (
-                      <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
-                        <td className="px-4 sm:px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-[#1a1a1a] flex items-center justify-center text-lg shrink-0 overflow-hidden">
-                              {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover" /> : '👟'}
-                            </div>
-                            <span className="text-[#f5f0eb] font-medium text-xs sm:text-sm">{p.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 text-[#888] text-xs sm:text-sm">{p.brand}</td>
-                        <td className="px-4 sm:px-6 py-4 text-[#888] text-xs sm:text-sm">{p.category}</td>
-                        <td className="px-4 sm:px-6 py-4">
-                          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${p.price}</span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4">
-                          <span className={"text-sm font-medium " + (p.stock <= 5 ? 'text-red-400' : p.stock <= 15 ? 'text-yellow-400' : 'text-green-400')}>
-                            {p.stock} {p.stock <= 5 && <span className="text-[0.6rem] tracking-widest uppercase ml-1">Low</span>}
-                          </span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4">
-                          <div className="flex items-center gap-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setProductModal(p)}
-                              className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Edit</button>
-                            <span className="text-[#2e2e2e]">|</span>
-                            <button onClick={() => setDeleteTarget(p)}
-                              className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-red-400 transition-colors cursor-pointer">Delete</button>
-                          </div>
-                        </td>
+              <>
+                {/* Desktop table */}
+                <div className="hidden sm:block bg-[#111] border border-[#1a1a1a] overflow-x-auto">
+                  <table className="w-full text-sm min-w-[560px]">
+                    <thead>
+                      <tr className="border-b border-[#1a1a1a]">
+                        {['Product', 'Brand', 'Category', 'Price', 'Stock', 'Actions'].map(h => (
+                          <th key={h} className="text-left px-5 py-4 text-[0.6rem] tracking-[0.25em] uppercase text-[#888] font-normal">{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#1a1a1a]">
+                      {filteredProducts.length === 0 ? (
+                        <tr><td colSpan={6} className="text-center py-16 text-[#888] text-sm font-light">No products found.</td></tr>
+                      ) : filteredProducts.map(p => (
+                        <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 bg-[#1a1a1a] flex items-center justify-center text-lg shrink-0 overflow-hidden">
+                                {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover" /> : '👟'}
+                              </div>
+                              <span className="text-[#f5f0eb] font-medium text-sm">{p.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 text-[#888] text-sm">{p.brand}</td>
+                          <td className="px-5 py-4 text-[#888] text-sm">{p.category}</td>
+                          <td className="px-5 py-4">
+                            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${p.price}</span>
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className={"text-sm font-medium " + (p.stock <= 5 ? 'text-red-400' : p.stock <= 15 ? 'text-yellow-400' : 'text-green-400')}>
+                              {p.stock}{p.stock <= 5 && <span className="text-[0.6rem] tracking-widest uppercase ml-1">Low</span>}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button onClick={() => setProductModal(p)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Edit</button>
+                              <span className="text-[#2e2e2e]">|</span>
+                              <button onClick={() => setDeleteTarget(p)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-red-400 transition-colors cursor-pointer">Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="sm:hidden space-y-2">
+                  {filteredProducts.length === 0 ? (
+                    <div className="text-center py-16 text-[#888] text-sm font-light bg-[#111] border border-[#1a1a1a]">No products found.</div>
+                  ) : filteredProducts.map(p => (
+                    <div key={p.id} className="bg-[#111] border border-[#1a1a1a] p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 bg-[#1a1a1a] flex items-center justify-center text-2xl shrink-0">{p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover" /> : '👟'}</div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[#f5f0eb] font-medium text-sm">{p.name}</p>
+                          <p className="text-[#888] text-xs">{p.brand} &middot; {p.category}</p>
+                        </div>
+                        <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#f5f0eb' }}>${p.price}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-[#1a1a1a] pt-3">
+                        <span className={"text-xs font-medium " + (p.stock <= 5 ? 'text-red-400' : p.stock <= 15 ? 'text-yellow-400' : 'text-green-400')}>
+                          Stock: {p.stock}{p.stock <= 5 && ' (Low)'}
+                        </span>
+                        <div className="flex gap-4">
+                          <button onClick={() => setProductModal(p)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Edit</button>
+                          <button onClick={() => setDeleteTarget(p)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-red-400 transition-colors cursor-pointer">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
-            {/* ORDERS TAB */}
+            {/* ORDERS — table on desktop, cards on mobile */}
             {activeTab === 'orders' && (
-              <div className="bg-[#111] border border-[#1a1a1a] overflow-x-auto">
-                <table className="w-full text-sm min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-[#1a1a1a]">
-                      {['Order ID', 'Customer', 'Items', 'Total', 'Date', 'Status', 'Actions'].map(h => (
-                        <th key={h} className="text-left px-4 sm:px-6 py-4 text-[0.6rem] tracking-[0.25em] uppercase text-[#888] font-normal">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1a1a1a]">
-                    {filteredOrders.length === 0 ? (
-                      <tr><td colSpan={7} className="text-center py-16 text-[#888] text-sm font-light">No orders found.</td></tr>
-                    ) : filteredOrders.map(o => (
-                      <tr key={o.id} className="hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => setOrderDetail(o)}>
-                        <td className="px-4 sm:px-6 py-4">
-                          <span className="text-[#e8530a] font-medium text-xs tracking-wide">{o.id}</span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4">
-                          <p className="text-[#f5f0eb] font-medium text-xs sm:text-sm">{o.customer}</p>
-                          <p className="text-[#888] text-xs hidden sm:block">{o.email}</p>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 text-[#888] text-xs sm:text-sm">{o.items}</td>
-                        <td className="px-4 sm:px-6 py-4">
-                          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${o.total}</span>
-                        </td>
-                        <td className="px-4 sm:px-6 py-4 text-[#888] text-xs">{o.date}</td>
-                        <td className="px-4 sm:px-6 py-4" onClick={e => e.stopPropagation()}>
-                          {orderStatusEdit === o.id ? (
-                            <select defaultValue={o.status}
-                              onChange={e => handleStatusChange(o.id, e.target.value)}
-                              onBlur={() => setOrderStatusEdit(null)}
-                              autoFocus
-                              className="bg-[#0a0a0a] text-[#f5f0eb] text-xs border border-[#e8530a] px-2 py-1 focus:outline-none cursor-pointer">
-                              {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
-                            </select>
-                          ) : (
-                            <span className={"text-[0.65rem] tracking-[0.1em] uppercase border px-2.5 py-1 " + (STATUS_STYLES[o.status] || 'border-[#2e2e2e] text-[#888]')}>
-                              {o.status}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 sm:px-6 py-4" onClick={e => e.stopPropagation()}>
-                          <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => setOrderDetail(o)}
-                              className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">View</button>
-                            <span className="text-[#2e2e2e]">|</span>
-                            <button onClick={() => setOrderStatusEdit(o.id)}
-                              className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Update</button>
-                          </div>
-                        </td>
+              <>
+                {/* Desktop table */}
+                <div className="hidden sm:block bg-[#111] border border-[#1a1a1a] overflow-x-auto">
+                  <table className="w-full text-sm min-w-[640px]">
+                    <thead>
+                      <tr className="border-b border-[#1a1a1a]">
+                        {['Order ID', 'Customer', 'Items', 'Total', 'Date', 'Status', 'Actions'].map(h => (
+                          <th key={h} className="text-left px-5 py-4 text-[0.6rem] tracking-[0.25em] uppercase text-[#888] font-normal">{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#1a1a1a]">
+                      {filteredOrders.length === 0 ? (
+                        <tr><td colSpan={7} className="text-center py-16 text-[#888] text-sm font-light">No orders found.</td></tr>
+                      ) : filteredOrders.map(o => (
+                        <tr key={o.id} className="hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => setOrderDetail(o)}>
+                          <td className="px-5 py-4"><span className="text-[#e8530a] font-medium text-xs tracking-wide">{o.id}</span></td>
+                          <td className="px-5 py-4">
+                            <p className="text-[#f5f0eb] font-medium text-sm">{o.customer}</p>
+                            <p className="text-[#888] text-xs">{o.email}</p>
+                          </td>
+                          <td className="px-5 py-4 text-[#888] text-sm">{o.items}</td>
+                          <td className="px-5 py-4">
+                            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${o.total}</span>
+                          </td>
+                          <td className="px-5 py-4 text-[#888] text-xs">{o.date}</td>
+                          <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
+                            {orderStatusEdit === o.id ? (
+                              <select defaultValue={o.status} onChange={e => handleStatusChange(o.id, e.target.value)} onBlur={() => setOrderStatusEdit(null)} autoFocus
+                                className="bg-[#0a0a0a] text-[#f5f0eb] text-xs border border-[#e8530a] px-2 py-1 focus:outline-none cursor-pointer">
+                                {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                            ) : (
+                              <span className={"text-[0.65rem] tracking-[0.1em] uppercase border px-2.5 py-1 " + (STATUS_STYLES[o.status] || 'border-[#2e2e2e] text-[#888]')}>{o.status}</span>
+                            )}
+                          </td>
+                          <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button onClick={() => setOrderDetail(o)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">View</button>
+                              <span className="text-[#2e2e2e]">|</span>
+                              <button onClick={() => setOrderStatusEdit(o.id)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Update</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile order cards */}
+                <div className="sm:hidden space-y-2">
+                  {filteredOrders.length === 0 ? (
+                    <div className="text-center py-16 text-[#888] text-sm font-light bg-[#111] border border-[#1a1a1a]">No orders found.</div>
+                  ) : filteredOrders.map(o => (
+                    <div key={o.id} className="bg-[#111] border border-[#1a1a1a] p-4 cursor-pointer" onClick={() => setOrderDetail(o)}>
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                          <p className="text-[#e8530a] text-xs tracking-wide font-medium mb-1">{o.id}</p>
+                          <p className="text-[#f5f0eb] font-medium text-sm">{o.customer}</p>
+                          <p className="text-[#888] text-xs">{o.email}</p>
+                        </div>
+                        <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#f5f0eb' }}>${o.total}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-[#1a1a1a] pt-3">
+                        <div className="flex items-center gap-2">
+                          <span className={"w-1.5 h-1.5 rounded-full " + (STATUS_DOT[o.status] || 'bg-[#888]')} />
+                          <span className="text-xs text-[#888]">{o.status}</span>
+                          <span className="text-[#2e2e2e]">·</span>
+                          <span className="text-xs text-[#888]">{o.items} item{o.items > 1 ? 's' : ''}</span>
+                          <span className="text-[#2e2e2e]">·</span>
+                          <span className="text-xs text-[#888]">{o.date}</span>
+                        </div>
+                        <div className="flex gap-3" onClick={e => e.stopPropagation()}>
+                          <button onClick={() => setOrderDetail(o)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">View</button>
+                          <button onClick={() => setOrderStatusEdit(o.id)} className="text-xs tracking-[0.1em] uppercase text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">Update</button>
+                        </div>
+                      </div>
+                      {/* Inline status editor on mobile */}
+                      {orderStatusEdit === o.id && (
+                        <div className="mt-3 pt-3 border-t border-[#1a1a1a]" onClick={e => e.stopPropagation()}>
+                          <select defaultValue={o.status} onChange={e => handleStatusChange(o.id, e.target.value)} onBlur={() => setOrderStatusEdit(null)} autoFocus
+                            className="w-full bg-[#0a0a0a] text-[#f5f0eb] text-xs border border-[#e8530a] px-3 py-2 focus:outline-none cursor-pointer">
+                            {['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
           </main>
         </div>
       </div>
 
-      {/* MODALS */}
-      {productModal && (
-        <ProductModal
-          product={productModal === 'add' ? null : productModal}
-          onSave={handleSaveProduct}
-          onClose={() => setProductModal(null)}
-        />
-      )}
-      {deleteTarget && (
-        <DeleteConfirm
-          name={deleteTarget.name}
-          onConfirm={handleDeleteProduct}
-          onClose={() => setDeleteTarget(null)}
-        />
-      )}
-      {orderDetail && (
-        <OrderDetailModal
-          order={orderDetail}
-          onClose={() => setOrderDetail(null)}
-        />
-      )}
+      {productModal && <ProductModal product={productModal === 'add' ? null : productModal} onSave={handleSaveProduct} onClose={() => setProductModal(null)} />}
+      {deleteTarget && <DeleteConfirm name={deleteTarget.name} onConfirm={handleDeleteProduct} onClose={() => setDeleteTarget(null)} />}
+      {orderDetail && <OrderDetailModal order={orderDetail} onClose={() => setOrderDetail(null)} />}
     </>
   );
 }
