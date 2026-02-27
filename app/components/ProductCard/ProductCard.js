@@ -67,7 +67,7 @@ export default function ProductCard({ shoe }) {
               ${shoe.price}
             </span>
             <div className="bg-[#e8530a] text-white px-5 py-2 text-xs tracking-[0.15em] uppercase font-medium
-              group-hover:bg-[#ff6b2b] transition-colors"
+              group-hover:bg-[#ff6b2b] transition-colors" suppressHydrationWarning
               style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}>
               View Details
             </div>
