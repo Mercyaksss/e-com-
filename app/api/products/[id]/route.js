@@ -6,7 +6,8 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
 
-    const product = await Product.findById(params.id);
+    const { id } = await params;
+    const product = await Product.findById(id);
 
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });

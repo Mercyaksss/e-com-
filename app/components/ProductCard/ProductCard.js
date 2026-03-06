@@ -6,14 +6,20 @@ import { useState } from 'react';
 export default function ProductCard({ shoe }) {
   const [added, setAdded] = useState(false);
 
+  // New schema: images array + variants for colors
+  // Falls back to old schema just in case
+  const image = shoe.images?.[0] || shoe.image || '';
+  const colors = shoe.variants ? shoe.variants.map(v => v.color) : (shoe.colors || []);
+  const id = shoe._id || shoe.id;
+
   const handleAdd = (e) => {
-    e.preventDefault(); // prevent the outer Link from firing
+    e.preventDefault();
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
   };
 
   return (
-    <Link href={`/product/${shoe.id}`}>
+    <Link href={`/product/${id}`}>
       <div className="group bg-[#1a1a1a] overflow-hidden relative cursor-pointer h-full flex flex-col">
 
         {/* Badge */}
@@ -37,7 +43,7 @@ export default function ProductCard({ shoe }) {
         <div className="relative h-64 overflow-hidden bg-[#111]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.12),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
           <img
-            src={shoe.image}
+            src={image}
             alt={shoe.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -53,7 +59,7 @@ export default function ProductCard({ shoe }) {
 
           {/* Color tags */}
           <div className="flex flex-wrap gap-2 mb-5">
-            {shoe.colors.slice(0, 3).map((color, i) => (
+            {colors.slice(0, 3).map((color, i) => (
               <span key={i} className="text-[0.65rem] tracking-[0.1em] uppercase border border-[#2e2e2e] text-[#888] px-2.5 py-1">
                 {color}
               </span>
@@ -62,12 +68,12 @@ export default function ProductCard({ shoe }) {
 
           {/* Price + CTA */}
           <div className="flex items-center justify-between mt-auto">
-            <span className="font-bebas text-3xl tracking-wide text-[#f5f0eb]"
+            <span className="text-3xl tracking-wide text-[#f5f0eb]"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
               ${shoe.price}
             </span>
             <div className="bg-[#e8530a] text-white px-5 py-2 text-xs tracking-[0.15em] uppercase font-medium
-              group-hover:bg-[#ff6b2b] transition-colors" suppressHydrationWarning
+              group-hover:bg-[#ff6b2b] transition-colors"
               style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}>
               View Details
             </div>

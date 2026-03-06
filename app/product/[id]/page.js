@@ -1,30 +1,56 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import Navbar from '../../components/Navbar/Navbar';
-import { getShoeById } from '../../data/mockData';
 
 export default function ProductPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
 
-  const shoe = params.id ? getShoeById(params.id) : null;
-
-  const [selectedSize, setSelectedSize] = useState(shoe?.sizes?.[0] ?? '');
-  const [selectedColor, setSelectedColor] = useState(shoe?.colors?.[0] ?? '');
+  const [shoe, setShoe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [added, setAdded] = useState(false);
   const [sizeError, setSizeError] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef(null);
 
-  const getImages = (s) => {
-    if (!s) return [];
-    if (Array.isArray(s.images) && s.images.length > 0) return s.images;
-    if (s.image) return [s.image];
-    return [];
+  useEffect(() => {
+    if (!params.id) return;
+    fetch('/api/products/' + params.id)
+      .then(res => res.json())
+      .then(data => {
+        setShoe(data);
+        // Set defaults from first variant
+        if (data.variants?.length > 0) {
+          setSelectedColor(data.variants[0].color);
+          if (data.variants[0].sizes?.length > 0) {
+            setSelectedSize(data.variants[0].sizes[0].size);
+          }
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, [params.id]);
+
+  // Get sizes for currently selected color
+  const currentVariant = shoe?.variants?.find(v => v.color === selectedColor);
+  const availableSizes = currentVariant?.sizes || [];
+
+  // When color changes, reset size to first available in that color
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+    setSizeError(false);
+    const variant = shoe.variants.find(v => v.color === color);
+    if (variant?.sizes?.length > 0) {
+      setSelectedSize(variant.sizes[0].size);
+    } else {
+      setSelectedSize('');
+    }
   };
 
   const handleAddToCart = () => {
@@ -33,23 +59,50 @@ export default function ProductPage() {
       setTimeout(() => setSizeError(false), 2000);
       return;
     }
-    addToCart({ ...shoe, selectedSize, selectedColor });
+    addToCart({
+      ...shoe,
+      id: shoe._id,
+      image: shoe.images?.[0] || '',
+      selectedSize,
+      selectedColor,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const prevImage = (images) => setActiveIndex(i => (i - 1 + images.length) % images.length);
-  const nextImage = (images) => setActiveIndex(i => (i + 1) % images.length);
+  const images = shoe?.images || [];
+  const hasMultiple = images.length > 1;
+
+  const prevImage = () => setActiveIndex(i => (i - 1 + images.length) % images.length);
+  const nextImage = () => setActiveIndex(i => (i + 1) % images.length);
 
   const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e, images) => {
+  const onTouchEnd = (e) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) diff > 0 ? nextImage(images) : prevImage(images);
+    if (Math.abs(diff) > 40) diff > 0 ? nextImage() : prevImage();
     touchStartX.current = null;
   };
 
-  if (!shoe) {
+  // Loading state
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[#0a0a0a] pt-36">
+          <div className="max-w-7xl mx-auto px-6 md:px-14">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              <div className="bg-[#111] h-[560px] animate-pulse" />
+              <div className="bg-[#111] h-[560px] animate-pulse" />
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
+
+  // Not found state
+  if (!shoe || shoe.error) {
     return (
       <>
         <Navbar />
@@ -59,7 +112,7 @@ export default function ProductPage() {
             <h2 className="text-[#f5f0eb] mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem' }}>
               Product Not Found
             </h2>
-            <p className="text-[#888] text-sm font-light mb-8">This shoe does not exist or has been removed.</p>
+            <p className="text-[#888] text-sm font-light mb-8">This product does not exist or has been removed.</p>
             <button
               onClick={() => router.push('/productspage')}
               className="text-xs tracking-[0.2em] uppercase text-[#e8530a] border border-[#e8530a] px-8 py-3 hover:bg-[#e8530a] hover:text-white transition-all cursor-pointer"
@@ -71,9 +124,6 @@ export default function ProductPage() {
       </>
     );
   }
-
-  const images = getImages(shoe);
-  const hasMultiple = images.length > 1;
 
   return (
     <>
@@ -109,15 +159,17 @@ export default function ProductPage() {
             <div
               className="carousel-wrap animate-fade-up bg-[#111] border border-[#1a1a1a] relative overflow-hidden group"
               onTouchStart={onTouchStart}
-              onTouchEnd={(e) => onTouchEnd(e, images)}
+              onTouchEnd={onTouchEnd}
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
-              <img
-                key={activeIndex}
-                src={images[activeIndex]}
-                alt={shoe.name}
-                className="img-fade w-full h-[300px] sm:h-[400px] md:h-[560px] object-cover group-hover:scale-105 transition-transform duration-700"
-              />
+              {images.length > 0 && (
+                <img
+                  key={activeIndex}
+                  src={images[activeIndex]}
+                  alt={shoe.name}
+                  className="img-fade w-full h-[300px] sm:h-[400px] md:h-[560px] object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              )}
               <span
                 className="absolute bottom-6 left-6 text-white/[0.06] select-none pointer-events-none leading-none z-20"
                 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
@@ -127,28 +179,18 @@ export default function ProductPage() {
 
               {hasMultiple && (
                 <>
-                  <button
-                    onClick={() => prevImage(images)}
-                    aria-label="Previous image"
-                    className="carousel-arrow absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/60 hover:bg-[#e8530a] text-white text-2xl flex items-center justify-center cursor-pointer"
-                  >
+                  <button onClick={prevImage} aria-label="Previous image"
+                    className="carousel-arrow absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/60 hover:bg-[#e8530a] text-white text-2xl flex items-center justify-center cursor-pointer">
                     &lsaquo;
                   </button>
-                  <button
-                    onClick={() => nextImage(images)}
-                    aria-label="Next image"
-                    className="carousel-arrow absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/60 hover:bg-[#e8530a] text-white text-2xl flex items-center justify-center cursor-pointer"
-                  >
+                  <button onClick={nextImage} aria-label="Next image"
+                    className="carousel-arrow absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-black/60 hover:bg-[#e8530a] text-white text-2xl flex items-center justify-center cursor-pointer">
                     &rsaquo;
                   </button>
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
                     {images.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveIndex(i)}
-                        aria-label={"Image " + (i + 1)}
-                        className={"rounded-full transition-all cursor-pointer " + (i === activeIndex ? 'w-5 h-1.5 bg-[#e8530a]' : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/60')}
-                      />
+                      <button key={i} onClick={() => setActiveIndex(i)} aria-label={"Image " + (i + 1)}
+                        className={"rounded-full transition-all cursor-pointer " + (i === activeIndex ? 'w-5 h-1.5 bg-[#e8530a]' : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/60')} />
                     ))}
                   </div>
                   <span className="absolute top-4 right-4 z-30 bg-black/60 text-white text-xs tracking-[0.15em] px-2.5 py-1 select-none">
@@ -184,13 +226,13 @@ export default function ProductPage() {
                   Colour &mdash; <span className="text-[#f5f0eb] capitalize">{selectedColor}</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {shoe.colors.map(color => (
+                  {shoe.variants.map(variant => (
                     <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
+                      key={variant.color}
+                      onClick={() => handleColorChange(variant.color)}
+                      className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
                     >
-                      {color}
+                      {variant.color}
                     </button>
                   ))}
                 </div>
@@ -202,11 +244,12 @@ export default function ProductPage() {
                   {sizeError ? 'Please select a size' : 'Size (US)'}
                 </label>
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {shoe.sizes.map(size => (
+                  {availableSizes.map(({ size, stock }) => (
                     <button
                       key={size}
+                      disabled={stock === 0}
                       onClick={() => { setSelectedSize(size); setSizeError(false); }}
-                      className={"py-2.5 md:py-3 text-sm font-medium transition-all cursor-pointer " + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : 'border-[#2e2e2e]'))}
+                      className={"py-2.5 md:py-3 text-sm font-medium transition-all " + (stock === 0 ? 'border border-[#1a1a1a] text-[#333] cursor-not-allowed line-through' : 'cursor-pointer ' + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : 'border-[#2e2e2e]')))}
                     >
                       {size}
                     </button>
@@ -220,7 +263,7 @@ export default function ProductPage() {
                 className={"w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all cursor-pointer mt-auto " + (added ? 'bg-green-500 text-white' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]')}
                 style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
               >
-                {added ? 'Added to Cart' : 'Add to Cart'}
+                {added ? 'Added to Cart ✓' : 'Add to Cart'}
               </button>
 
               {/* Product details grid */}
@@ -228,10 +271,10 @@ export default function ProductPage() {
                 <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-4 md:mb-5">Product Details</p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { label: 'Category', value: shoe.category },
-                    { label: 'Gender',   value: shoe.gender },
-                    { label: 'Colors',   value: shoe.colors.length },
-                    { label: 'Sizes',    value: shoe.sizes.length + ' available' },
+                    { label: 'Category', value: shoe.category || '—' },
+                    { label: 'Colors',   value: shoe.variants.length },
+                    { label: 'Sizes',    value: availableSizes.length + ' available' },
+                    { label: 'In Stock', value: availableSizes.filter(s => s.stock > 0).length + ' sizes' },
                   ].map(detail => (
                     <div key={detail.label} className="bg-[#0a0a0a] px-3 md:px-4 py-3">
                       <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#888] mb-1">{detail.label}</p>
