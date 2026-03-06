@@ -114,6 +114,7 @@ function ProductModal({ product, onSave, onClose }) {
   const [form, setForm] = useState(() => toForm(product));
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const addVariant = () => setForm(f => ({ ...f, variants: [...f.variants, { color: '', sizes: [{ size: '', stock: '' }] }] }));
   const removeVariant = (vi) => setForm(f => ({ ...f, variants: f.variants.filter((_, i) => i !== vi) }));
@@ -224,10 +225,68 @@ function ProductModal({ product, onSave, onClose }) {
           </div>
 
           <div>
-            <label className={labelClass}>Image URLs (one per line)</label>
-            <textarea value={form.images} onChange={e => setForm(f => ({ ...f, images: e.target.value }))}
-              placeholder={"https://images.unsplash.com/...\nhttps://images.unsplash.com/..."} rows={3}
-              className={inputClass + " resize-none"} />
+            <label className={labelClass}>Images</label>
+            <div className="space-y-3">
+              {/* Image previews */}
+              {form.images && form.images.split('\n').filter(Boolean).map((url, i) => (
+                <div key={i} className="flex items-center gap-3 bg-[#0a0a0a] border border-[#2e2e2e] p-2">
+                  <img src={url} alt="Product" className="w-16 h-16 object-cover shrink-0" />
+                  <span className="text-[#888] text-xs truncate flex-1">{url}</span>
+                  <button onClick={() => {
+                    const urls = form.images.split('\n').filter(Boolean);
+                    urls.splice(i, 1);
+                    setForm(f => ({ ...f, images: urls.join('\n') }));
+                  }} className="text-[#888] hover:text-red-400 transition-colors cursor-pointer shrink-0">✕</button>
+                </div>
+              ))}
+
+              {/* Upload button */}
+              <div className="relative">
+                <input
+                  type="file" accept="image/*" multiple id="image-upload"
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  onChange={async (e) => {
+                    const files = Array.from(e.target.files);
+                    if (!files.length) return;
+                    setUploading(true);
+                    try {
+                      const urls = await Promise.all(files.map(async (file) => {
+                        const fd = new FormData();
+                        fd.append('file', file);
+                        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error);
+                        return data.url;
+                      }));
+                      setForm(f => ({
+                        ...f,
+                        images: [...f.images.split('\n').filter(Boolean), ...urls].join('\n')
+                      }));
+                    } catch (err) {
+                      setErrors(p => ({ ...p, submit: 'Image upload failed: ' + err.message }));
+                    } finally {
+                      setUploading(false);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <div className={"w-full border border-dashed border-[#2e2e2e] px-4 py-6 text-center transition-colors " + (uploading ? 'border-[#e8530a]/50' : 'hover:border-[#e8530a]/50')}>
+                  {uploading ? (
+                    <span className="flex items-center justify-center gap-2 text-[#888] text-sm">
+                      <span className="w-4 h-4 border border-[#888] border-t-transparent rounded-full animate-spin" />
+                      Uploading...
+                    </span>
+                  ) : (
+                    <span className="text-[#888] text-sm">Click to upload images</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Manual URL input as fallback */}
+              <textarea value={form.images} onChange={e => setForm(f => ({ ...f, images: e.target.value }))}
+                placeholder={"Or paste image URLs here (one per line)..."} rows={2}
+                className={inputClass + " resize-none text-xs"} />
+            </div>
           </div>
 
           {/* Variants */}
