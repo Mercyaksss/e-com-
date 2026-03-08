@@ -1,12 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import { BRANDS, CATEGORIES } from '../../data/mockData';
+import { useState, useEffect } from 'react';
 
 export default function FilterSidebar({ onFilterChange }) {
+  const [brands, setBreands] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+
+  // Fetch all products once to extract unique brands and categories
+  useEffect(() => {
+    fetch('/api/products')
+      .then(r => r.json())
+      .then(products => {
+        if (!Array.isArray(products)) return;
+        const uniqueBrands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
+        const uniqueCategories = [...new Set(products.flatMap(p => Array.isArray(p.category) ? p.category : [p.category]).filter(Boolean))].sort();
+        setBreands(uniqueBrands);
+        setCategories(uniqueCategories);
+      })
+      .catch(err => console.error('Failed to fetch filter options:', err));
+  }, []);
 
   const handleFilterChange = () => {
     onFilterChange({
@@ -57,7 +72,7 @@ export default function FilterSidebar({ onFilterChange }) {
             <div className="relative">
               <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} className={selectClass + " select-arrow"}>
                 <option value="">All Brands</option>
-                {BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}
+                {brands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
               </select>
             </div>
           </div>
@@ -67,13 +82,13 @@ export default function FilterSidebar({ onFilterChange }) {
             <div className="relative">
               <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass + " select-arrow"}>
                 <option value="">All Categories</option>
-                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3">Price Range</label>
+            <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3">Price Range (₦)</label>
             <div className="flex items-center gap-2">
               <input type="number" placeholder="Min" value={priceRange.min}
                 onChange={e => setPriceRange({ ...priceRange, min: e.target.value })}
@@ -101,7 +116,7 @@ export default function FilterSidebar({ onFilterChange }) {
               )}
               {(priceRange.min || priceRange.max) && (
                 <span className="flex items-center gap-1.5 text-[0.65rem] tracking-[0.1em] uppercase border border-[#e8530a] text-[#e8530a] px-2.5 py-1">
-                  ${priceRange.min || '0'} to ${priceRange.max || 'max'}
+                  ₦{priceRange.min || '0'} to ₦{priceRange.max || 'max'}
                   <button onClick={() => setPriceRange({ min: '', max: '' })} className="hover:text-white transition-colors cursor-pointer">x</button>
                 </span>
               )}
@@ -109,18 +124,14 @@ export default function FilterSidebar({ onFilterChange }) {
           )}
 
           <div className="flex flex-col gap-2 pt-1">
-            <button
-              onClick={handleFilterChange}
+            <button onClick={handleFilterChange}
               className="w-full bg-[#e8530a] text-white py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer"
-              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
-            >
+              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}>
               Apply Filters
             </button>
             {hasActiveFilters && (
-              <button
-                onClick={handleReset}
-                className="w-full bg-transparent text-[#888] py-3 text-xs tracking-[0.2em] uppercase border border-[#2e2e2e] hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer"
-              >
+              <button onClick={handleReset}
+                className="w-full bg-transparent text-[#888] py-3 text-xs tracking-[0.2em] uppercase border border-[#2e2e2e] hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
                 Clear All
               </button>
             )}

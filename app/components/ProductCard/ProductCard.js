@@ -70,7 +70,7 @@ export default function ProductCard({ shoe }) {
           <div className="flex items-center justify-between mt-auto">
             <span className="text-3xl tracking-wide text-[#f5f0eb]"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-              ${shoe.price}
+              ₦{shoe.price}
             </span>
             <div className="bg-[#e8530a] text-white px-5 py-2 text-xs tracking-[0.15em] uppercase font-medium
               group-hover:bg-[#ff6b2b] transition-colors"

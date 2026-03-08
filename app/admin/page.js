@@ -631,8 +631,8 @@ export default function AdminPage() {
   const stats = [
     { label: 'Total Products', value: products.length, sub: products.filter(p => getTotalStock(p) <= 5).length + ' low stock' },
     { label: 'Total Orders',   value: orders.length,   sub: orders.filter(o => o.status === 'Pending').length + ' pending' },
-    { label: 'Revenue',        value: '$' + orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0).toLocaleString(), sub: 'excl. cancelled' },
-    { label: 'Avg Order',      value: orders.filter(o => o.status !== 'Cancelled').length > 0 ? '$' + Math.round(orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0) / orders.filter(o => o.status !== 'Cancelled').length) : '$0', sub: 'per order' },
+    { label: 'Revenue',        value: '₦' + orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0).toLocaleString(), sub: 'excl. cancelled' },
+    { label: 'Avg Order',      value: orders.filter(o => o.status !== 'Cancelled').length > 0 ? '₦' + Math.round(orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0) / orders.filter(o => o.status !== 'Cancelled').length) : '$0', sub: 'per order' },
   ];
 
   const SidebarContent = () => (

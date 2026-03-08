@@ -30,7 +30,7 @@ export async function PUT(request, { params }) {
         category: Array.isArray(category) ? category : [category].filter(Boolean),
         description, images, variants, badge: badge || null,
       },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updated) return NextResponse.json({ error: 'Product not found' }, { status: 404 });

@@ -212,7 +212,7 @@ export default function ProductPage() {
                   {shoe.name}
                 </h1>
                 <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
-                  ${shoe.price}
+                  ₦{shoe.price}
                 </span>
               </div>
 

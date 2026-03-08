@@ -122,7 +122,7 @@ export default function CartModal({ isOpen, onClose }) {
                         className="text-[#f5f0eb]"
                         style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', letterSpacing: '0.05em' }}
                       >
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₦{(item.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -148,7 +148,7 @@ export default function CartModal({ isOpen, onClose }) {
                   className="text-[#f5f0eb]"
                   style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 4vw, 2rem)', letterSpacing: '0.05em' }}
                 >
-                  ${getCartTotal().toFixed(2)}
+                  ₦{getCartTotal().toFixed(2)}
                 </span>
               </div>
               <p className="text-[#444] text-xs mb-6 sm:mb-8 font-light">Shipping and taxes calculated at checkout</p>

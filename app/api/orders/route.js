@@ -7,9 +7,9 @@ export async function POST(request) {
     await connectDB();
 
     const body = await request.json();
-    const { firstName, lastName, email, phone, items, subtotal, total } = body;
+    const { customer, items, subtotal, total, paymentMethod, paymentStatus } = body;
 
-    if (!firstName || !lastName || !email || !phone) {
+    if (!customer?.firstName || !customer?.lastName || !customer?.email || !customer?.phone) {
       return NextResponse.json({ error: 'Customer info is required' }, { status: 400 });
     }
     if (!items || items.length === 0) {
@@ -17,10 +17,12 @@ export async function POST(request) {
     }
 
     const order = await Order.create({
-      customer: { firstName, lastName, email, phone },
+      customer,
       items,
       subtotal,
       total,
+      paymentMethod: paymentMethod || 'Card',
+      paymentStatus: paymentStatus || 'Paid',
     });
 
     return NextResponse.json(
@@ -30,7 +32,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('POST /api/orders error:', error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
