@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { usePaystackPayment } from 'react-paystack';
 import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar/Navbar';
 import Link from 'next/link';
@@ -10,23 +11,16 @@ const inputClass = `
   border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none
   transition-colors placeholder:text-[#444]
 `;
-
 const labelClass = `block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-2`;
 
 function SuccessModal({ order, onClose }) {
   return (
     <>
       <style>{`
-        @keyframes scale-in {
-          from { opacity: 0; transform: scale(0.92); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes check-draw {
-          from { stroke-dashoffset: 60; }
-          to   { stroke-dashoffset: 0; }
-        }
-        .animate-check { animation: check-draw 0.5s ease 0.3s forwards; stroke-dashoffset: 60; stroke-dasharray: 60; }
+        @keyframes scale-in { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+        .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        @keyframes check-draw { from { stroke-dashoffset:60; } to { stroke-dashoffset:0; } }
+        .animate-check { animation: check-draw 0.5s ease 0.3s forwards; stroke-dashoffset:60; stroke-dasharray:60; }
       `}</style>
       <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center px-6">
         <div className="animate-scale-in bg-[#111] border border-[#1a1a1a] w-full max-w-md" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -51,19 +45,17 @@ function SuccessModal({ order, onClose }) {
                 <div key={i} className="flex justify-between items-center px-5 py-3 border-b border-[#1a1a1a] last:border-0">
                   <div>
                     <p className="text-[#f5f0eb] text-xs font-medium">{item.name}</p>
-                    <p className="text-[#888] text-[0.65rem] tracking-[0.1em] uppercase">
-                      Size {item.selectedSize} · {item.selectedColor}
-                    </p>
+                    <p className="text-[#888] text-[0.65rem] tracking-[0.1em] uppercase">Size {item.selectedSize} · {item.selectedColor}</p>
                   </div>
                   <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
-                    ₦{(item.price * item.quantity).toFixed(2)}
+                    ₦{(item.price * item.quantity).toLocaleString()}
                   </span>
                 </div>
               ))}
               <div className="flex justify-between items-center px-5 py-4 border-t border-[#2e2e2e]">
                 <span className="text-[0.65rem] tracking-[0.2em] uppercase text-[#888]">Total Paid</span>
                 <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem' }}>
-                  ₦{order.total}
+                  ₦{Number(order.total).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -82,27 +74,41 @@ function SuccessModal({ order, onClose }) {
   );
 }
 
+function PaystackButton({ config, onSuccess, onClose, disabled, total }) {
+  const initializePayment = usePaystackPayment(config);
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => initializePayment({ onSuccess, onClose })}
+      className={`w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all cursor-pointer ${disabled ? 'bg-[#2e2e2e] text-[#888] cursor-not-allowed' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]'}`}
+      style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}>
+      Pay ₦{Number(total).toLocaleString()}
+    </button>
+  );
+}
+
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
 
-  const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', phone: '',
-    cardNumber: '', cardExpiry: '', cardCvc: '', cardName: '',
-  });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successOrder, setSuccessOrder] = useState(null);
+  const [formReady, setFormReady] = useState(false);
 
-  const formatCard   = (val) => val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
-  const formatExpiry = (val) => {
-    const digits = val.replace(/\D/g, '').slice(0, 4);
-    return digits.length >= 3 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
-  };
-
-  const handleChange = useCallback((field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field, value) => {
+    const updated = { ...form, [field]: value };
+    setForm(updated);
     setErrors(prev => ({ ...prev, [field]: '' }));
-  }, []);
+
+    // Check if form is valid to enable pay button
+    const { firstName, lastName, email, phone } = updated;
+    setFormReady(
+      firstName.trim() && lastName.trim() &&
+      /\S+@\S+\.\S+/.test(email) && phone.trim()
+    );
+  };
 
   const validate = () => {
     const e = {};
@@ -110,22 +116,28 @@ export default function CheckoutPage() {
     if (!form.lastName.trim())  e.lastName  = 'Required';
     if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
     if (!form.phone.trim())     e.phone     = 'Required';
-    if (form.cardNumber.replace(/\s/g, '').length < 16) e.cardNumber = 'Enter a valid 16-digit number';
-    if (!form.cardExpiry || form.cardExpiry.length < 5) e.cardExpiry = 'Enter MM/YY';
-    if (!form.cardCvc || form.cardCvc.length < 3)       e.cardCvc    = 'Enter CVC';
-    if (!form.cardName.trim()) e.cardName = 'Required';
     return e;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+  const total = getCartTotal();
 
+  const paystackConfig = {
+    reference: 'SOLE-' + Date.now(),
+    email: form.email,
+    amount: Math.round(total * 100), // Paystack uses kobo
+    currency: 'NGN',
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+    metadata: {
+      custom_fields: [
+        { display_name: 'Customer Name', variable_name: 'customer_name', value: form.firstName + ' ' + form.lastName },
+        { display_name: 'Phone', variable_name: 'phone', value: form.phone },
+      ],
+    },
+  };
+
+  const handlePaystackSuccess = async (response) => {
     setLoading(true);
     try {
-      const subtotal = getCartTotal();
-
       const orderPayload = {
         customer: {
           firstName: form.firstName,
@@ -143,10 +155,12 @@ export default function CheckoutPage() {
           selectedColor: item.selectedColor || '',
           image:         item.image || item.images?.[0] || '',
         })),
-        subtotal,
-        total: subtotal,
-        paymentMethod: 'Card ending ' + form.cardNumber.replace(/\s/g, '').slice(-4),
-        paymentStatus: 'Paid',
+        subtotal: total,
+        total,
+        paymentMethod:    'Paystack',
+        paymentReference: response.reference,
+        paystackReference: response.reference,
+        paymentStatus:    'Paid',
       };
 
       const res = await fetch('/api/orders', {
@@ -156,28 +170,32 @@ export default function CheckoutPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to place order');
+      if (!res.ok) throw new Error(data.error || 'Failed to save order');
 
       setSuccessOrder({
         orderId:   data.orderId,
         firstName: form.firstName,
         email:     form.email,
         items:     cart,
-        total:     subtotal.toFixed(2),
+        total:     total.toFixed(2),
       });
       clearCart?.();
     } catch (err) {
-      setErrors({ submit: err.message });
+      setErrors({ submit: 'Payment was successful but order failed to save. Please contact support. Ref: ' + response.reference });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaystackClose = () => {
+    // User closed Paystack popup without paying — do nothing
   };
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
-        @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fade-up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         .animate-fade-up { animation: fade-up 0.5s ease forwards; }
       `}</style>
 
@@ -217,168 +235,137 @@ export default function CheckoutPage() {
         )}
 
         {cart.length > 0 && (
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 md:gap-8">
+          <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 md:gap-8">
 
-              <div className="space-y-2">
-                {/* Contact Info */}
-                <div className="bg-[#111] border border-[#1a1a1a]">
-                  <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
-                    <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">1</span>
-                    <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Contact Information</span>
+            {/* LEFT — Contact Info */}
+            <div className="space-y-2">
+              <div className="bg-[#111] border border-[#1a1a1a]">
+                <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
+                  <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">1</span>
+                  <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Contact Information</span>
+                </div>
+                <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-5">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 min-w-0">
+                      <label className={labelClass}>First Name</label>
+                      <input type="text" placeholder="Jane" value={form.firstName}
+                        onChange={e => handleChange('firstName', e.target.value)}
+                        className={`${inputClass} ${errors.firstName ? 'border-red-400/70' : ''}`} />
+                      {errors.firstName && <p className="text-red-400 text-[0.65rem] mt-1">{errors.firstName}</p>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <label className={labelClass}>Last Name</label>
+                      <input type="text" placeholder="Smith" value={form.lastName}
+                        onChange={e => handleChange('lastName', e.target.value)}
+                        className={`${inputClass} ${errors.lastName ? 'border-red-400/70' : ''}`} />
+                      {errors.lastName && <p className="text-red-400 text-[0.65rem] mt-1">{errors.lastName}</p>}
+                    </div>
                   </div>
-                  <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-5">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="flex-1 min-w-0">
-                        <label className={labelClass}>First Name</label>
-                        <input type="text" placeholder="Jane" value={form.firstName}
-                          onChange={e => handleChange('firstName', e.target.value)}
-                          className={`${inputClass} ${errors.firstName ? 'border-red-400/70' : ''}`} />
-                        {errors.firstName && <p className="text-red-400 text-[0.65rem] mt-1">{errors.firstName}</p>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <label className={labelClass}>Last Name</label>
-                        <input type="text" placeholder="Smith" value={form.lastName}
-                          onChange={e => handleChange('lastName', e.target.value)}
-                          className={`${inputClass} ${errors.lastName ? 'border-red-400/70' : ''}`} />
-                        {errors.lastName && <p className="text-red-400 text-[0.65rem] mt-1">{errors.lastName}</p>}
-                      </div>
-                    </div>
-                    <div>
-                      <label className={labelClass}>Email Address</label>
-                      <input type="email" placeholder="jane@example.com" value={form.email}
-                        onChange={e => handleChange('email', e.target.value)}
-                        className={`${inputClass} ${errors.email ? 'border-red-400/70' : ''}`} />
-                      {errors.email && <p className="text-red-400 text-[0.65rem] mt-1">{errors.email}</p>}
-                    </div>
-                    <div>
-                      <label className={labelClass}>Phone Number</label>
-                      <input type="tel" placeholder="+234 800 000 0000" value={form.phone}
-                        onChange={e => handleChange('phone', e.target.value)}
-                        className={`${inputClass} ${errors.phone ? 'border-red-400/70' : ''}`} />
-                      {errors.phone && <p className="text-red-400 text-[0.65rem] mt-1">{errors.phone}</p>}
-                    </div>
+                  <div>
+                    <label className={labelClass}>Email Address</label>
+                    <input type="email" placeholder="jane@example.com" value={form.email}
+                      onChange={e => handleChange('email', e.target.value)}
+                      className={`${inputClass} ${errors.email ? 'border-red-400/70' : ''}`} />
+                    {errors.email && <p className="text-red-400 text-[0.65rem] mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className={labelClass}>Phone Number</label>
+                    <input type="tel" placeholder="+234 800 000 0000" value={form.phone}
+                      onChange={e => handleChange('phone', e.target.value)}
+                      className={`${inputClass} ${errors.phone ? 'border-red-400/70' : ''}`} />
+                    {errors.phone && <p className="text-red-400 text-[0.65rem] mt-1">{errors.phone}</p>}
                   </div>
                 </div>
-
-                {/* Payment */}
-                <div className="bg-[#111] border border-[#1a1a1a]">
-                  <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
-                    <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">2</span>
-                    <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Payment Details</span>
-                    <div className="ml-auto flex gap-2">
-                      {['VISA', 'MC', 'AMEX'].map(c => (
-                        <span key={c} className="text-[0.55rem] tracking-widest border border-[#2e2e2e] text-[#888] px-1.5 py-0.5">{c}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-5">
-                    <div>
-                      <label className={labelClass}>Card Number</label>
-                      <input type="text" placeholder="1234 5678 9012 3456" value={form.cardNumber} maxLength={19}
-                        onChange={e => handleChange('cardNumber', formatCard(e.target.value))}
-                        className={`${inputClass} ${errors.cardNumber ? 'border-red-400/70' : ''}`} />
-                      {errors.cardNumber && <p className="text-red-400 text-[0.65rem] mt-1">{errors.cardNumber}</p>}
-                    </div>
-                    <div>
-                      <label className={labelClass}>Name on Card</label>
-                      <input type="text" placeholder="Jane Smith" value={form.cardName}
-                        onChange={e => handleChange('cardName', e.target.value)}
-                        className={`${inputClass} ${errors.cardName ? 'border-red-400/70' : ''}`} />
-                      {errors.cardName && <p className="text-red-400 text-[0.65rem] mt-1">{errors.cardName}</p>}
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="flex-1 min-w-0">
-                        <label className={labelClass}>Expiry Date</label>
-                        <input type="text" placeholder="MM/YY" value={form.cardExpiry} maxLength={5}
-                          onChange={e => handleChange('cardExpiry', formatExpiry(e.target.value))}
-                          className={`${inputClass} ${errors.cardExpiry ? 'border-red-400/70' : ''}`} />
-                        {errors.cardExpiry && <p className="text-red-400 text-[0.65rem] mt-1">{errors.cardExpiry}</p>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <label className={labelClass}>CVC</label>
-                        <input type="password" placeholder="123" value={form.cardCvc} maxLength={4}
-                          onChange={e => handleChange('cardCvc', e.target.value)}
-                          className={`${inputClass} ${errors.cardCvc ? 'border-red-400/70' : ''}`} />
-                        {errors.cardCvc && <p className="text-red-400 text-[0.65rem] mt-1">{errors.cardCvc}</p>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="px-5 sm:px-8 pb-6 sm:pb-8">
-                    <div className="flex items-center gap-2 text-[#888] text-xs font-light">
-                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Your payment info is encrypted and secure
-                    </div>
-                  </div>
-                </div>
-
-                {errors.submit && <p className="text-red-400 text-xs px-1">{errors.submit}</p>}
               </div>
 
-              {/* RIGHT — Order Summary */}
-              <div className="space-y-2">
-                <div className="bg-[#111] border border-[#1a1a1a] sticky top-28">
-                  <div className="px-7 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
-                    <span className="w-5 h-px bg-[#e8530a]" />
-                    <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Order Summary</span>
-                    <span className="ml-auto text-[#888] text-xs">{cart.reduce((a, i) => a + i.quantity, 0)} items</span>
-                  </div>
-                  <div className="divide-y divide-[#1a1a1a]">
-                    {cart.map((item, i) => (
-                      <div key={i} className="flex gap-4 px-7 py-4">
-                        <div className="w-16 h-16 bg-[#0a0a0a] shrink-0 overflow-hidden">
-                          <img src={item.image || item.images?.[0] || ''} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[#f5f0eb] text-xs font-medium truncate">{item.name}</p>
-                          <p className="text-[#888] text-[0.6rem] tracking-[0.1em] uppercase mt-0.5">{item.brand} · Size {item.selectedSize}</p>
-                          <p className="text-[#888] text-[0.6rem] tracking-[0.1em] capitalize">{item.selectedColor} · Qty {item.quantity}</p>
-                        </div>
-                        <span className="text-[#f5f0eb] shrink-0" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
-                          ₦{(item.price * item.quantity).toFixed(2)}
-                        </span>
+              {/* Payment info note */}
+              <div className="bg-[#111] border border-[#1a1a1a] px-5 sm:px-8 py-5">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">2</span>
+                  <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Payment</span>
+                </div>
+                <p className="text-[#888] text-sm font-light mt-3 ml-9">
+                  You'll be redirected to Paystack's secure payment page to complete your purchase. We accept cards, bank transfers, and USSD.
+                </p>
+                <div className="flex items-center gap-2 text-[#888] text-xs font-light mt-4 ml-9">
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Secured by Paystack
+                </div>
+              </div>
+
+              {errors.submit && <p className="text-red-400 text-xs px-1">{errors.submit}</p>}
+            </div>
+
+            {/* RIGHT — Order Summary */}
+            <div className="space-y-2">
+              <div className="bg-[#111] border border-[#1a1a1a] sticky top-28">
+                <div className="px-7 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
+                  <span className="w-5 h-px bg-[#e8530a]" />
+                  <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Order Summary</span>
+                  <span className="ml-auto text-[#888] text-xs">{cart.reduce((a, i) => a + i.quantity, 0)} items</span>
+                </div>
+                <div className="divide-y divide-[#1a1a1a]">
+                  {cart.map((item, i) => (
+                    <div key={i} className="flex gap-4 px-7 py-4">
+                      <div className="w-16 h-16 bg-[#0a0a0a] shrink-0 overflow-hidden">
+                        <img src={item.image || item.images?.[0] || ''} alt={item.name} className="w-full h-full object-cover" />
                       </div>
-                    ))}
-                  </div>
-                  <div className="px-7 py-5 border-t border-[#1a1a1a] space-y-3">
-                    <div className="flex justify-between text-xs text-[#888]">
-                      <span>Subtotal</span>
-                      <span className="text-[#f5f0eb]">₦{getCartTotal().toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-[#888]">
-                      <span>Shipping</span>
-                      <span className="text-green-400">Free</span>
-                    </div>
-                    <div className="flex justify-between items-center border-t border-[#2e2e2e] pt-4 mt-1">
-                      <span className="text-[0.65rem] tracking-[0.2em] uppercase text-[#888]">Total</span>
-                      <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem' }}>
-                        ₦{getCartTotal().toFixed(2)}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[#f5f0eb] text-xs font-medium truncate">{item.name}</p>
+                        <p className="text-[#888] text-[0.6rem] tracking-[0.1em] uppercase mt-0.5">{item.brand} · Size {item.selectedSize}</p>
+                        <p className="text-[#888] text-[0.6rem] tracking-[0.1em] capitalize">{item.selectedColor} · Qty {item.quantity}</p>
+                      </div>
+                      <span className="text-[#f5f0eb] shrink-0" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
+                        ₦{(item.price * item.quantity).toLocaleString()}
                       </span>
                     </div>
+                  ))}
+                </div>
+                <div className="px-7 py-5 border-t border-[#1a1a1a] space-y-3">
+                  <div className="flex justify-between text-xs text-[#888]">
+                    <span>Subtotal</span>
+                    <span className="text-[#f5f0eb]">₦{total.toLocaleString()}</span>
                   </div>
-                  <div className="px-7 pb-7">
-                    <button type="submit" disabled={loading}
-                      className={`w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all cursor-pointer ${loading ? 'bg-[#2e2e2e] text-[#888] cursor-not-allowed' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]'}`}
-                      style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}>
-                      {loading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="w-3 h-3 border border-[#888] border-t-transparent rounded-full animate-spin" />
-                          Processing...
-                        </span>
-                      ) : `Pay ₦${getCartTotal().toFixed(2)}`}
-                    </button>
-                    <Link href="/productspage"
-                      className="block text-center text-[#888] hover:text-[#f5f0eb] text-xs tracking-[0.15em] uppercase mt-4 transition-colors no-underline">
-                      ← Back to Shop
-                    </Link>
+                  <div className="flex justify-between text-xs text-[#888]">
+                    <span>Shipping</span>
+                    <span className="text-green-400">Free</span>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-[#2e2e2e] pt-4 mt-1">
+                    <span className="text-[0.65rem] tracking-[0.2em] uppercase text-[#888]">Total</span>
+                    <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem' }}>
+                      ₦{total.toLocaleString()}
+                    </span>
                   </div>
                 </div>
+                <div className="px-7 pb-7 space-y-3">
+                  {loading ? (
+                    <div className="w-full py-4 bg-[#2e2e2e] flex items-center justify-center gap-2 text-[#888] text-sm tracking-[0.2em] uppercase">
+                      <span className="w-3 h-3 border border-[#888] border-t-transparent rounded-full animate-spin" />
+                      Saving order...
+                    </div>
+                  ) : (
+                    <PaystackButton
+                      config={paystackConfig}
+                      onSuccess={handlePaystackSuccess}
+                      onClose={handlePaystackClose}
+                      disabled={!formReady}
+                      total={total}
+                    />
+                  )}
+                  {!formReady && (
+                    <p className="text-[#888] text-[0.65rem] text-center tracking-wide">Fill in your contact info to proceed</p>
+                  )}
+                  <Link href="/productspage"
+                    className="block text-center text-[#888] hover:text-[#f5f0eb] text-xs tracking-[0.15em] uppercase mt-2 transition-colors no-underline">
+                    ← Back to Shop
+                  </Link>
+                </div>
               </div>
-
             </div>
-          </form>
+
+          </div>
         )}
       </main>
     </>

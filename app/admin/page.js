@@ -869,7 +869,7 @@ export default function AdminPage() {
                                 </td>
                                 <td className="px-5 py-4 text-[#888] text-sm">{o.items?.length || 0}</td>
                                 <td className="px-5 py-4">
-                                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${o.total}</span>
+                                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>₦{o.total}</span>
                                 </td>
                                 <td className="px-5 py-4 text-[#888] text-xs">{orderDate}</td>
                                 <td className="px-5 py-4" onClick={e => e.stopPropagation()}>

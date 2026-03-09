@@ -7,13 +7,25 @@ export async function POST(request) {
     await connectDB();
 
     const body = await request.json();
-    const { customer, items, subtotal, total, paymentMethod, paymentStatus } = body;
+    const { customer, items, subtotal, total, paymentMethod, paymentStatus, paystackReference } = body;
 
     if (!customer?.firstName || !customer?.lastName || !customer?.email || !customer?.phone) {
       return NextResponse.json({ error: 'Customer info is required' }, { status: 400 });
     }
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Order must have at least one item' }, { status: 400 });
+    }
+
+    // Verify payment with Paystack before saving order
+    if (!paystackReference) {
+      return NextResponse.json({ error: 'Payment reference is required' }, { status: 400 });
+    }
+    const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${paystackReference}`, {
+      headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.status || verifyData.data?.status !== 'success') {
+      return NextResponse.json({ error: 'Payment verification failed' }, { status: 400 });
     }
 
     const order = await Order.create({
