@@ -25,5 +25,10 @@
     "eslint-config-next": "16.1.6",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19"
+  },
+  "overrides": {
+    "react-paystack": {
+      "react": "$react"
+    }
   }
 }
