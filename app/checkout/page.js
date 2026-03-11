@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import Navbar from '../components/Navbar/Navbar';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 const inputClass = `
   w-full bg-[#111] text-[#f5f0eb] px-4 py-3 text-sm
   border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none
