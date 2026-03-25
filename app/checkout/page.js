@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { usePaystackPayment } from 'react-paystack';
+import dynamic from 'next/dynamic';
 import { useCart } from '../context/CartContext';
+
+const PaystackButton = dynamic(() => import('./PaystackButton'), { ssr: false });
 import Navbar from '../components/Navbar/Navbar';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 const inputClass = `
   w-full bg-[#111] text-[#f5f0eb] px-4 py-3 text-sm
@@ -76,19 +78,6 @@ function SuccessModal({ order, onClose }) {
   );
 }
 
-function PaystackButton({ config, onSuccess, onClose, disabled, total }) {
-  const initializePayment = usePaystackPayment(config);
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={() => initializePayment({ onSuccess, onClose })}
-      className={`w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all cursor-pointer ${disabled ? 'bg-[#2e2e2e] text-[#888] cursor-not-allowed' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]'}`}
-      style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}>
-      Pay ₦{Number(total).toLocaleString()}
-    </button>
-  );
-}
 
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
