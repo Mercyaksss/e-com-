@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '../../../lib/mongodb';
 import Order from '../../../models/Order';
+import Product from '../../../models/Product';
 
 export async function POST(request) {
   try {
@@ -28,6 +29,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Payment verification failed' }, { status: 400 });
     }
 
+    // Check stock for each item before saving order
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
+      if (!product) return NextResponse.json({ error: `Product not found: ${item.name}` }, { status: 400 });
+      const variant = product.variants.find(v => v.color === item.selectedColor);
+      if (!variant) return NextResponse.json({ error: `Color not found for ${item.name}` }, { status: 400 });
+      const sizeEntry = variant.sizes.find(s => s.size === Number(item.selectedSize));
+      if (!sizeEntry || sizeEntry.stock < item.quantity) {
+        return NextResponse.json({ error: `Not enough stock for ${item.name} in size ${item.selectedSize}` }, { status: 400 });
+      }
+    }
+
     const order = await Order.create({
       customer,
       items,
@@ -36,6 +49,15 @@ export async function POST(request) {
       paymentMethod: paymentMethod || 'Card',
       paymentStatus: paymentStatus || 'Paid',
     });
+
+    // Reduce stock for each item after order is saved
+    for (const item of items) {
+      await Product.updateOne(
+        { _id: item.productId, 'variants.color': item.selectedColor },
+        { $inc: { 'variants.$[v].sizes.$[s].stock': -item.quantity } },
+        { arrayFilters: [{ 'v.color': item.selectedColor }, { 's.size': Number(item.selectedSize) }] }
+      );
+    }
 
     return NextResponse.json(
       { success: true, orderId: order.orderId, _id: order._id },

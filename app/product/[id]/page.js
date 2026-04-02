@@ -25,12 +25,11 @@ export default function ProductPage() {
       .then(res => res.json())
       .then(data => {
         setShoe(data);
-        // Set defaults from first variant
+        // Set defaults from first variant — skip out of stock sizes
         if (data.variants?.length > 0) {
           setSelectedColor(data.variants[0].color);
-          if (data.variants[0].sizes?.length > 0) {
-            setSelectedSize(data.variants[0].sizes[0].size);
-          }
+          const firstAvailable = data.variants[0].sizes?.find(s => s.stock > 0);
+          if (firstAvailable) setSelectedSize(firstAvailable.size);
         }
       })
       .catch(err => console.error(err))
@@ -41,16 +40,34 @@ export default function ProductPage() {
   const currentVariant = shoe?.variants?.find(v => v.color === selectedColor);
   const availableSizes = currentVariant?.sizes || [];
 
-  // When color changes, reset size to first available in that color
+  // Total stock across ALL variants and sizes
+  const totalStock = shoe?.variants
+    ? shoe.variants.reduce((sum, v) => sum + v.sizes.reduce((s, sz) => s + sz.stock, 0), 0)
+    : 0;
+
+  const isOutOfStock = totalStock === 0;
+
+  // Stock label for detail page
+  const getStockLabel = () => {
+    if (totalStock === 0) return null;
+    if (totalStock === 1) return { label: 'Only 1 left 🔥', color: 'text-red-400' };
+    if (totalStock === 2) return { label: 'Only 2 left', color: 'text-red-400' };
+    if (totalStock <= 5) return { label: 'Low Stock', color: 'text-yellow-500' };
+    return null;
+  };
+
+  const stockLabel = shoe ? getStockLabel() : null;
+
+  // Selected size stock
+  const selectedSizeStock = availableSizes.find(s => s.size === selectedSize)?.stock ?? 0;
+
+  // When color changes, reset size to first available (in stock) in that color
   const handleColorChange = (color) => {
     setSelectedColor(color);
     setSizeError(false);
     const variant = shoe.variants.find(v => v.color === color);
-    if (variant?.sizes?.length > 0) {
-      setSelectedSize(variant.sizes[0].size);
-    } else {
-      setSelectedSize('');
-    }
+    const firstAvailable = variant?.sizes?.find(s => s.stock > 0);
+    setSelectedSize(firstAvailable ? firstAvailable.size : '');
   };
 
   const handleAddToCart = () => {
@@ -59,6 +76,7 @@ export default function ProductPage() {
       setTimeout(() => setSizeError(false), 2000);
       return;
     }
+    if (selectedSizeStock === 0) return;
     addToCart({
       ...shoe,
       id: shoe._id,
@@ -211,60 +229,88 @@ export default function ProductPage() {
                 <h1 className="text-[#f5f0eb] leading-none mb-4 md:mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.2rem, 5vw, 4.5rem)' }}>
                   {shoe.name}
                 </h1>
-                <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
-                  ₦{shoe.price}
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
+                    ₦{shoe.price}
+                  </span>
+                  {stockLabel && (
+                    <span className={`text-xs tracking-[0.15em] uppercase font-medium ${stockLabel.color}`}>
+                      {stockLabel.label}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <p className="text-[#888] text-sm md:text-base leading-relaxed font-light mb-8 md:mb-10 border-t border-[#1a1a1a] pt-6 md:pt-8">
                 {shoe.description}
               </p>
 
-              {/* Colour */}
-              <div className="mb-6 md:mb-8">
-                <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3 md:mb-4">
-                  Colour &mdash; <span className="text-[#f5f0eb] capitalize">{selectedColor}</span>
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {shoe.variants.map(variant => (
-                    <button
-                      key={variant.color}
-                      onClick={() => handleColorChange(variant.color)}
-                      className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
-                    >
-                      {variant.color}
-                    </button>
-                  ))}
+              {/* Full out of stock state */}
+              {isOutOfStock ? (
+                <div className="flex flex-col flex-1 justify-between">
+                  <div className="border border-[#2e2e2e] px-6 py-8 text-center mb-6">
+                    <p className="text-[#888] text-xs tracking-[0.25em] uppercase mb-2">Availability</p>
+                    <p className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', letterSpacing: '0.1em' }}>Out of Stock</p>
+                    <p className="text-[#888] text-xs font-light mt-2">This product is currently unavailable.</p>
+                  </div>
+                  <button
+                    disabled
+                    className="w-full py-4 text-sm tracking-[0.2em] uppercase font-medium bg-[#2e2e2e] text-[#555] cursor-not-allowed mt-auto"
+                    style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
+                  >
+                    Out of Stock
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Colour */}
+                  <div className="mb-6 md:mb-8">
+                    <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3 md:mb-4">
+                      Colour &mdash; <span className="text-[#f5f0eb] capitalize">{selectedColor}</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {shoe.variants.map(variant => (
+                        <button
+                          key={variant.color}
+                          onClick={() => handleColorChange(variant.color)}
+                          className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
+                        >
+                          {variant.color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Size */}
-              <div className="mb-8 md:mb-10">
-                <label className={"block text-[0.65rem] tracking-[0.25em] uppercase mb-3 md:mb-4 transition-colors " + (sizeError ? 'text-red-400' : 'text-[#888]')}>
-                  {sizeError ? 'Please select a size' : 'Size (US)'}
-                </label>
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {availableSizes.map(({ size, stock }) => (
-                    <button
-                      key={size}
-                      disabled={stock === 0}
-                      onClick={() => { setSelectedSize(size); setSizeError(false); }}
-                      className={"py-2.5 md:py-3 text-sm font-medium transition-all " + (stock === 0 ? 'border border-[#1a1a1a] text-[#333] cursor-not-allowed line-through' : 'cursor-pointer ' + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : 'border-[#2e2e2e]')))}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  {/* Size */}
+                  <div className="mb-8 md:mb-10">
+                    <label className={"block text-[0.65rem] tracking-[0.25em] uppercase mb-3 md:mb-4 transition-colors " + (sizeError ? 'text-red-400' : 'text-[#888]')}>
+                      {sizeError ? 'Please select a size' : 'Size (US)'}
+                    </label>
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                      {availableSizes.map(({ size, stock }) => (
+                        <button
+                          key={size}
+                          disabled={stock === 0}
+                          onClick={() => { setSelectedSize(size); setSizeError(false); }}
+                          className={"py-2.5 md:py-3 text-sm font-medium transition-all " + (stock === 0 ? 'border border-[#1a1a1a] text-[#333] cursor-not-allowed line-through' : 'cursor-pointer ' + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : 'border-[#2e2e2e]')))}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Add to cart */}
-              <button
-                onClick={handleAddToCart}
-                className={"w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all cursor-pointer mt-auto " + (added ? 'bg-green-500 text-white' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b]')}
-                style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-              >
-                {added ? 'Added to Cart ✓' : 'Add to Cart'}
-              </button>
+                  {/* Add to cart */}
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={selectedSizeStock === 0}
+                    className={"w-full py-4 text-sm tracking-[0.2em] uppercase font-medium transition-all mt-auto " + (selectedSizeStock === 0 ? 'bg-[#2e2e2e] text-[#555] cursor-not-allowed' : added ? 'bg-green-500 text-white cursor-pointer' : 'bg-[#e8530a] text-white hover:bg-[#ff6b2b] cursor-pointer')}
+                    style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
+                  >
+                    {added ? 'Added to Cart ✓' : 'Add to Cart'}
+                  </button>
+                </>
+              )}
 
               {/* Product details grid */}
               <div className="mt-6 md:mt-8 border-t border-[#1a1a1a] pt-6 md:pt-8">

@@ -4,13 +4,23 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import hero from '../public/heroimage.png';
+import shoe1 from '../public/shoe1.png';
+import shoe2 from '../public/shoe2.png';
+import shoe3 from '../public/shoe3.png';
+import shoe4 from '../public/shoe4.png';
+import shoe5 from '../public/shoe5.png';
+import shoe6 from '../public/shoe6.png';
+
+
 
 const products = [
-  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 180, badge: 'New', emoji: '👟', span: false },
-  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 190, badge: null, emoji: '👟', span: false },
-  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 220, badge: 'Hot', emoji: '👟', span: false },
-  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 185, badge: null, emoji: '👟', span: true },
-  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 110, badge: 'Sale', emoji: '👟', span: false },
+  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 180, badge: 'New', emoji: shoe1, span: false },
+  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 190, badge: null, emoji: shoe2, span: false },
+  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 220, badge: 'Hot', emoji: shoe3, span: false },
+  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 185, badge: null, emoji: shoe4, span: false },
+  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 110, badge: 'Sale', emoji: shoe5, span: false },
+  { id: 6, brand: 'Puma', name: 'RS-X Reinvention', price: 110, badge: 'Sale', emoji: shoe6, span: false },
+
 ];
 
 const testimonials = [
@@ -246,7 +256,7 @@ export default function SoleLanding() {
               </button>
               <div className={"flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105 relative " + (p.span ? 'text-[8rem] sm:text-[12rem] aspect-square sm:aspect-[2/1]' : 'text-[7rem] aspect-square')}>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                {p.emoji}
+                <Image src={p.emoji} fill alt={p.name} />
               </div>
               <div className="px-5 md:px-7 py-5 border-t border-[#2e2e2e] flex justify-between items-end">
                 <div>

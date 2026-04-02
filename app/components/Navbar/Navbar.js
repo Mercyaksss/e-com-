@@ -9,7 +9,10 @@ import CartModal from '../CartModal/CartModal';
 export default function Navbar() {
   const { getCartCount } = useCart();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => setMounted(true), []);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -121,7 +124,7 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               <span className="hidden md:block text-xs tracking-[0.15em] uppercase">Cart</span>
-              {getCartCount() > 0 && (
+              {mounted && getCartCount() > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#e8530a] text-white text-[0.6rem] w-4 h-4 flex items-center justify-center font-medium">
                   {getCartCount()}
                 </span>

@@ -1,11 +1,18 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try { return JSON.parse(localStorage.getItem('cart')) || []; } catch { return []; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (shoe) => {
     setCart(prevCart => {
@@ -50,6 +57,8 @@ export function CartProvider({ children }) {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
+  const clearCart = () => setCart([]);
+
   return (
     <CartContext.Provider
       value={{
@@ -58,7 +67,8 @@ export function CartProvider({ children }) {
         removeFromCart,
         updateQuantity,
         getCartTotal,
-        getCartCount
+        getCartCount,
+        clearCart,
       }}
     >
       {children}

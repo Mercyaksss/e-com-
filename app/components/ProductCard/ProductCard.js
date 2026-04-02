@@ -1,43 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
 
 export default function ProductCard({ shoe }) {
-  const [added, setAdded] = useState(false);
-
   // New schema: images array + variants for colors
   // Falls back to old schema just in case
   const image = shoe.images?.[0] || shoe.image || '';
   const colors = shoe.variants ? shoe.variants.map(v => v.color) : (shoe.colors || []);
   const id = shoe._id || shoe.id;
 
-  const handleAdd = (e) => {
-    e.preventDefault();
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1200);
+  // Calculate total stock across all variants and sizes
+  const totalStock = shoe.variants
+    ? shoe.variants.reduce((sum, v) => sum + v.sizes.reduce((s, sz) => s + sz.stock, 0), 0)
+    : 0;
+
+  const isOutOfStock = totalStock === 0;
+
+  // Stock badge logic — takes priority over shoe.badge
+  const getStockBadge = () => {
+    if (totalStock === 0) return { label: 'Out of Stock', color: 'bg-[#333] text-[#888]' };
+    if (totalStock === 1) return { label: 'Only 1 left 🔥', color: 'bg-red-500/90 text-white' };
+    if (totalStock === 2) return { label: 'Only 2 left', color: 'bg-red-500/90 text-white' };
+    if (totalStock <= 5) return { label: 'Low Stock', color: 'bg-yellow-600/90 text-white' };
+    return null;
   };
+
+  const stockBadge = getStockBadge();
 
   return (
     <Link href={`/product/${id}`}>
-      <div className="group bg-[#1a1a1a] overflow-hidden relative cursor-pointer h-full flex flex-col">
+      <div className={`group bg-[#1a1a1a] overflow-hidden relative cursor-pointer h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`}>
 
-        {/* Badge */}
-        {shoe.badge && (
+        {/* Badge — stock badge takes priority over shoe.badge */}
+        {stockBadge ? (
+          <span className={`absolute top-4 left-4 z-10 text-[0.65rem] tracking-[0.2em] uppercase px-3 py-1 ${stockBadge.color}`}>
+            {stockBadge.label}
+          </span>
+        ) : shoe.badge ? (
           <span className="absolute top-4 left-4 z-10 bg-[#e8530a] text-[#f5f0eb] text-[0.65rem] tracking-[0.2em] uppercase px-3 py-1">
             {shoe.badge}
           </span>
-        )}
-
-        {/* Quick add button */}
-        <button
-          onClick={handleAdd}
-          className={`absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center text-xl text-white
-            opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-200
-            ${added ? 'bg-green-500' : 'bg-[#e8530a]'}`}
-        >
-          {added ? '✓' : '+'}
-        </button>
+        ) : null}
 
         {/* Image */}
         <div className="relative h-64 overflow-hidden bg-[#111]">

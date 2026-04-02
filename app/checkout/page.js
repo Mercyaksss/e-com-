@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useCart } from '../context/CartContext';
 
@@ -87,6 +87,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [successOrder, setSuccessOrder] = useState(null);
   const [formReady, setFormReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const handleChange = (field, value) => {
     const updated = { ...form, [field]: value };
@@ -212,7 +214,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {cart.length === 0 && !successOrder && (
+        {mounted && cart.length === 0 && !successOrder && (
           <div className="flex flex-col items-center justify-center py-40 text-center px-6">
             <span className="text-7xl opacity-20 select-none mb-6">👟</span>
             <h3 className="text-[#f5f0eb] mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem' }}>Your Cart is Empty</h3>
@@ -225,7 +227,7 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        {cart.length > 0 && (
+        {mounted && cart.length > 0 && (
           <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 md:gap-8">
 
             {/* LEFT — Contact Info */}
