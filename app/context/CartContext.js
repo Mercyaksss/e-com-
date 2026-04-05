@@ -16,13 +16,19 @@ export function CartProvider({ children }) {
 
   const addToCart = (shoe) => {
     setCart(prevCart => {
-      // Check if shoe already in cart
-      const existing = prevCart.find(item => item.id === shoe.id);
-      
+      // Check if same shoe + same color + same size already in cart
+      const existing = prevCart.find(item =>
+        item.id === shoe.id &&
+        item.selectedColor === shoe.selectedColor &&
+        item.selectedSize === shoe.selectedSize
+      );
+
       if (existing) {
         // Increase quantity
         return prevCart.map(item =>
-          item.id === shoe.id
+          item.id === shoe.id &&
+          item.selectedColor === shoe.selectedColor &&
+          item.selectedSize === shoe.selectedSize
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -33,17 +39,25 @@ export function CartProvider({ children }) {
     });
   };
 
-  const removeFromCart = (shoeId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== shoeId));
+  const removeFromCart = (shoeId, selectedColor, selectedSize) => {
+    setCart(prevCart => prevCart.filter(item =>
+      !(item.id === shoeId &&
+        item.selectedColor === selectedColor &&
+        item.selectedSize === selectedSize)
+    ));
   };
 
-  const updateQuantity = (shoeId, quantity) => {
+  const updateQuantity = (shoeId, selectedColor, selectedSize, quantity) => {
     if (quantity === 0) {
-      removeFromCart(shoeId);
+      removeFromCart(shoeId, selectedColor, selectedSize);
     } else {
       setCart(prevCart =>
         prevCart.map(item =>
-          item.id === shoeId ? { ...item, quantity } : item
+          item.id === shoeId &&
+          item.selectedColor === selectedColor &&
+          item.selectedSize === selectedSize
+            ? { ...item, quantity }
+            : item
         )
       );
     }

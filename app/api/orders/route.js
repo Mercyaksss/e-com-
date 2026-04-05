@@ -8,7 +8,7 @@ export async function POST(request) {
     await connectDB();
 
     const body = await request.json();
-    const { customer, items, subtotal, total, paymentMethod, paymentStatus, paystackReference } = body;
+    const { customer, items, subtotal, total, paymentMethod, paymentStatus, paystackReference, deliveryOption, deliveryFee } = body;
 
     if (!customer?.firstName || !customer?.lastName || !customer?.email || !customer?.phone) {
       return NextResponse.json({ error: 'Customer info is required' }, { status: 400 });
@@ -45,6 +45,8 @@ export async function POST(request) {
       customer,
       items,
       subtotal,
+      deliveryOption: deliveryOption || 'Store Pickup',
+      deliveryFee:    deliveryFee    || 0,
       total,
       paymentMethod: paymentMethod || 'Card',
       paymentStatus: paymentStatus || 'Paid',

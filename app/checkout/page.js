@@ -17,6 +17,12 @@ const inputClass = `
 `;
 const labelClass = `block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-2`;
 
+const DELIVERY_OPTIONS = [
+  { id: 'pickup',          label: 'Store Pickup',           sublabel: 'Pick up at our store',        fee: 0 },
+  { id: 'within_kaduna',   label: 'Delivery within Kaduna', sublabel: 'Delivered to your address',   fee: 2000 },
+  { id: 'outside_kaduna',  label: 'Delivery outside Kaduna', sublabel: 'Delivered to your address',  fee: 4000 },
+];
+
 function SuccessModal({ order, onClose }) {
   return (
     <>
@@ -82,7 +88,7 @@ function SuccessModal({ order, onClose }) {
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useCart();
 
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', delivery: '', address: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successOrder, setSuccessOrder] = useState(null);
@@ -90,16 +96,21 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  const selectedDelivery = DELIVERY_OPTIONS.find(o => o.id === form.delivery);
+  const deliveryFee = selectedDelivery?.fee ?? 0;
+  const needsAddress = form.delivery && form.delivery !== 'pickup';
+
   const handleChange = (field, value) => {
     const updated = { ...form, [field]: value };
     setForm(updated);
     setErrors(prev => ({ ...prev, [field]: '' }));
 
-    // Check if form is valid to enable pay button
-    const { firstName, lastName, email, phone } = updated;
+    const { firstName, lastName, email, phone, delivery, address } = updated;
+    const addressValid = delivery === 'pickup' || (delivery && address.trim());
     setFormReady(
       firstName.trim() && lastName.trim() &&
-      /\S+@\S+\.\S+/.test(email) && phone.trim()
+      /\S+@\S+\.\S+/.test(email) && phone.trim() &&
+      delivery && addressValid
     );
   };
 
@@ -109,21 +120,26 @@ export default function CheckoutPage() {
     if (!form.lastName.trim())  e.lastName  = 'Required';
     if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
     if (!form.phone.trim())     e.phone     = 'Required';
+    if (!form.delivery)         e.delivery  = 'Please select a delivery option';
+    if (needsAddress && !form.address.trim()) e.address = 'Delivery address is required';
     return e;
   };
 
-  const total = getCartTotal();
+  const subtotal = getCartTotal();
+  const total = subtotal + deliveryFee;
 
   const paystackConfig = {
     reference: 'SOLE-' + Date.now(),
     email: form.email,
-    amount: Math.round(total * 100), // Paystack uses kobo
+    amount: Math.round(total * 100),
     currency: 'NGN',
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
     metadata: {
       custom_fields: [
         { display_name: 'Customer Name', variable_name: 'customer_name', value: form.firstName + ' ' + form.lastName },
         { display_name: 'Phone', variable_name: 'phone', value: form.phone },
+        { display_name: 'Delivery Option', variable_name: 'delivery_option', value: selectedDelivery?.label || '' },
+        { display_name: 'Address', variable_name: 'address', value: form.address || 'Store Pickup' },
       ],
     },
   };
@@ -137,6 +153,7 @@ export default function CheckoutPage() {
           lastName:  form.lastName,
           email:     form.email,
           phone:     form.phone,
+          address:   form.address || 'Store Pickup',
         },
         items: cart.map(item => ({
           productId:     item._id || item.id || 'unknown',
@@ -148,7 +165,9 @@ export default function CheckoutPage() {
           selectedColor: item.selectedColor || '',
           image:         item.image || item.images?.[0] || '',
         })),
-        subtotal: total,
+        subtotal,
+        deliveryOption: selectedDelivery?.label || '',
+        deliveryFee,
         total,
         paymentMethod:    'Paystack',
         paymentReference: response.reference,
@@ -230,8 +249,10 @@ export default function CheckoutPage() {
         {mounted && cart.length > 0 && (
           <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6 md:gap-8">
 
-            {/* LEFT — Contact Info */}
+            {/* LEFT — Steps */}
             <div className="space-y-2">
+
+              {/* Step 1 — Contact Info */}
               <div className="bg-[#111] border border-[#1a1a1a]">
                 <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
                   <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">1</span>
@@ -271,10 +292,58 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Payment info note */}
+              {/* Step 2 — Delivery */}
+              <div className="bg-[#111] border border-[#1a1a1a]">
+                <div className="px-5 sm:px-8 py-5 border-b border-[#1a1a1a] flex items-center gap-3">
+                  <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">2</span>
+                  <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Delivery</span>
+                </div>
+                <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-4">
+                  {errors.delivery && <p className="text-red-400 text-[0.65rem]">{errors.delivery}</p>}
+                  {DELIVERY_OPTIONS.map(option => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => handleChange('delivery', option.id)}
+                      className={`w-full flex items-center justify-between px-5 py-4 border transition-all text-left ${form.delivery === option.id ? 'border-[#e8530a] bg-[#e8530a]/5' : 'border-[#2e2e2e] hover:border-[#444]'}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${form.delivery === option.id ? 'border-[#e8530a]' : 'border-[#444]'}`}>
+                          {form.delivery === option.id && <div className="w-2 h-2 rounded-full bg-[#e8530a]" />}
+                        </div>
+                        <div>
+                          <p className="text-[#f5f0eb] text-sm font-medium">{option.label}</p>
+                          <p className="text-[#888] text-xs font-light">{option.sublabel}</p>
+                        </div>
+                      </div>
+                      <span className={`text-sm font-medium shrink-0 ml-4 ${option.fee === 0 ? 'text-green-400' : 'text-[#f5f0eb]'}`}
+                        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
+                        {option.fee === 0 ? 'Free' : `+₦${option.fee.toLocaleString()}`}
+                      </span>
+                    </button>
+                  ))}
+
+                  {/* Address field — only shown when delivery is selected */}
+                  {needsAddress && (
+                    <div className="pt-2">
+                      <label className={labelClass}>Delivery Address</label>
+                      <input
+                        type="text"
+                        placeholder="Enter your full delivery address"
+                        value={form.address}
+                        onChange={e => handleChange('address', e.target.value)}
+                        className={`${inputClass} ${errors.address ? 'border-red-400/70' : ''}`}
+                      />
+                      {errors.address && <p className="text-red-400 text-[0.65rem] mt-1">{errors.address}</p>}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Step 3 — Payment */}
               <div className="bg-[#111] border border-[#1a1a1a] px-5 sm:px-8 py-5">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">2</span>
+                  <span className="w-6 h-6 bg-[#e8530a] text-white text-xs flex items-center justify-center font-medium shrink-0">3</span>
                   <span className="text-[#f5f0eb] tracking-[0.15em]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem' }}>Payment</span>
                 </div>
                 <p className="text-[#888] text-sm font-light mt-3 ml-9">
@@ -319,11 +388,17 @@ export default function CheckoutPage() {
                 <div className="px-7 py-5 border-t border-[#1a1a1a] space-y-3">
                   <div className="flex justify-between text-xs text-[#888]">
                     <span>Subtotal</span>
-                    <span className="text-[#f5f0eb]">₦{total.toLocaleString()}</span>
+                    <span className="text-[#f5f0eb]">₦{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-xs text-[#888]">
-                    <span>Shipping</span>
-                    <span className="text-green-400">Free</span>
+                    <span>Delivery</span>
+                    {!form.delivery ? (
+                      <span className="text-[#555]">Select option</span>
+                    ) : deliveryFee === 0 ? (
+                      <span className="text-green-400">Free</span>
+                    ) : (
+                      <span className="text-[#f5f0eb]">+₦{deliveryFee.toLocaleString()}</span>
+                    )}
                   </div>
                   <div className="flex justify-between items-center border-t border-[#2e2e2e] pt-4 mt-1">
                     <span className="text-[0.65rem] tracking-[0.2em] uppercase text-[#888]">Total</span>
@@ -348,7 +423,7 @@ export default function CheckoutPage() {
                     />
                   )}
                   {!formReady && (
-                    <p className="text-[#888] text-[0.65rem] text-center tracking-wide">Fill in your contact info to proceed</p>
+                    <p className="text-[#888] text-[0.65rem] text-center tracking-wide">Fill in your details to proceed</p>
                   )}
                   <Link href="/productspage"
                     className="block text-center text-[#888] hover:text-[#f5f0eb] text-xs tracking-[0.15em] uppercase mt-2 transition-colors no-underline">

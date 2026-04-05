@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '../../../lib/mongodb';
 import Product from '../../../models/Product';
 
+export const revalidate = 60; // cache for 60 seconds
+
 export async function GET(request) {
   try {
     await connectDB();

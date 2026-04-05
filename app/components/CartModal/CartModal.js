@@ -105,14 +105,14 @@ export default function CartModal({ isOpen, onClose }) {
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2e2e2e]">
                       <div className="flex items-center border border-[#2e2e2e]">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.selectedColor, item.selectedSize, item.quantity - 1)}
                           className="w-7 h-7 sm:w-8 sm:h-8 text-[#888] hover:text-[#f5f0eb] hover:bg-[#2e2e2e] transition-all text-sm cursor-pointer"
                         >
                           -
                         </button>
                         <span className="w-7 sm:w-8 text-center text-[#f5f0eb] text-sm font-medium">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.selectedColor, item.selectedSize, item.quantity + 1)}
                           className="w-7 h-7 sm:w-8 sm:h-8 text-[#888] hover:text-[#f5f0eb] hover:bg-[#2e2e2e] transition-all text-sm cursor-pointer"
                         >
                           +
@@ -129,7 +129,7 @@ export default function CartModal({ isOpen, onClose }) {
 
                   {/* Remove */}
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.id, item.selectedColor, item.selectedSize)}
                     className="text-[#444] hover:text-red-400 transition-colors self-start cursor-pointer shrink-0 text-sm mt-0.5"
                     title="Remove item"
                   >

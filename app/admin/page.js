@@ -425,6 +425,8 @@ function OrderDetailModal({ order, onClose }) {
             <div class="info-box"><div class="label">Email</div><div class="value">${order.customer?.email}</div></div>
             <div class="info-box"><div class="label">Phone</div><div class="value">${order.customer?.phone || '—'}</div></div>
             <div class="info-box"><div class="label">Payment</div><div class="value">${order.paymentMethod || '—'}</div></div>
+            <div class="info-box"><div class="label">Delivery Option</div><div class="value">${order.deliveryOption || 'Store Pickup'}</div></div>
+            <div class="info-box"><div class="label">Delivery Address</div><div class="value">${order.customer?.address || 'Store Pickup'}</div></div>
           </div>
         </div>
         <div class="section">
@@ -438,11 +440,11 @@ function OrderDetailModal({ order, onClose }) {
                   <td>US ${p.selectedSize}</td>
                   <td style="text-transform:capitalize">${p.selectedColor}</td>
                   <td>${p.quantity}</td>
-                  <td style="text-align:right">$${(p.price * p.quantity).toFixed(2)}</td>
+                  <td style="text-align:right">₦${(p.price * p.quantity).toFixed(2)}</td>
                 </tr>`).join('')}
               <tr class="total-row">
                 <td colspan="4">Order Total</td>
-                <td style="text-align:right">$${order.total?.toFixed(2)}</td>
+                <td style="text-align:right">₦${order.total?.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -482,10 +484,12 @@ function OrderDetailModal({ order, onClose }) {
             <p className="text-[0.6rem] tracking-[0.3em] uppercase text-[#e8530a] mb-4">Customer Information</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { label: 'Full Name',  value: customerName },
-                { label: 'Email',      value: order.customer?.email },
-                { label: 'Phone',      value: order.customer?.phone || '—' },
-                { label: 'Order Date', value: orderDate },
+                { label: 'Full Name',        value: customerName },
+                { label: 'Email',            value: order.customer?.email },
+                { label: 'Phone',            value: order.customer?.phone || '—' },
+                { label: 'Order Date',       value: orderDate },
+                { label: 'Delivery Option',  value: order.deliveryOption || 'Store Pickup' },
+                { label: 'Delivery Address', value: order.customer?.address || 'Store Pickup' },
               ].map(d => (
                 <div key={d.label} className="bg-[#0a0a0a] px-4 py-3">
                   <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#888] mb-1">{d.label}</p>
@@ -507,14 +511,20 @@ function OrderDetailModal({ order, onClose }) {
                     </p>
                   </div>
                   <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb', whiteSpace: 'nowrap' }}>
-                    ${(p.price * p.quantity).toFixed(2)}
+                    ₦{(p.price * p.quantity).toLocaleString()}
                   </span>
                 </div>
               ))}
               <div className="flex items-center justify-between px-4 py-3 border-t border-[#2e2e2e]">
+                <span className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888]">Delivery Fee</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>
+                  {order.deliveryFee ? `₦${order.deliveryFee.toLocaleString()}` : 'Free'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 border-t border-[#2e2e2e]">
                 <span className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888]">Order Total</span>
                 <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: '#f5f0eb' }}>
-                  ${order.total?.toFixed(2)}
+                  ₦{order.total?.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -632,7 +642,7 @@ export default function AdminPage() {
     { label: 'Total Products', value: products.length, sub: products.filter(p => getTotalStock(p) <= 5).length + ' low stock' },
     { label: 'Total Orders',   value: orders.length,   sub: orders.filter(o => o.status === 'Pending').length + ' pending' },
     { label: 'Revenue',        value: '₦' + orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0).toLocaleString(), sub: 'excl. cancelled' },
-    { label: 'Avg Order',      value: orders.filter(o => o.status !== 'Cancelled').length > 0 ? '₦' + Math.round(orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0) / orders.filter(o => o.status !== 'Cancelled').length) : '$0', sub: 'per order' },
+    { label: 'Avg Order',      value: orders.filter(o => o.status !== 'Cancelled').length > 0 ? '₦' + Math.round(orders.filter(o => o.status !== 'Cancelled').reduce((a, o) => a + (o.total || 0), 0) / orders.filter(o => o.status !== 'Cancelled').length).toLocaleString() : '₦0', sub: 'per order' },
   ];
 
   const SidebarContent = () => (
@@ -911,7 +921,7 @@ export default function AdminPage() {
                                 <p className="text-[#f5f0eb] font-medium text-sm">{customerName}</p>
                                 <p className="text-[#888] text-xs">{o.customer?.email}</p>
                               </div>
-                              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#f5f0eb' }}>${o.total}</span>
+                              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.3rem', color: '#f5f0eb' }}>₦{o.total?.toLocaleString()}</span>
                             </div>
                             <div className="flex items-center justify-between border-t border-[#1a1a1a] pt-3">
                               <div className="flex items-center gap-2">

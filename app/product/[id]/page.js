@@ -312,7 +312,8 @@ export default function ProductPage() {
                 </>
               )}
 
-              {/* Product details grid */}
+              {/* Product details grid — hidden when out of stock */}
+              {!isOutOfStock && (
               <div className="mt-6 md:mt-8 border-t border-[#1a1a1a] pt-6 md:pt-8">
                 <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-4 md:mb-5">Product Details</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -329,6 +330,7 @@ export default function ProductPage() {
                   ))}
                 </div>
               </div>
+              )}
 
             </div>
           </div>

@@ -256,14 +256,14 @@ export default function SoleLanding() {
               </button>
               <div className={"flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105 relative " + (p.span ? 'text-[8rem] sm:text-[12rem] aspect-square sm:aspect-[2/1]' : 'text-[7rem] aspect-square')}>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Image src={p.emoji} fill alt={p.name} />
+                <Image src={p.emoji} fill alt={p.name} sizes="(max-width: 768px) 100vw, 50vw" />
               </div>
               <div className="px-5 md:px-7 py-5 border-t border-[#2e2e2e] flex justify-between items-end">
                 <div>
                   <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#e8530a] mb-1">{p.brand}</p>
                   <p className="text-base font-medium">{p.name}</p>
                 </div>
-                <span className="font-bebas text-3xl tracking-wide">${p.price}</span>
+                <span className="font-bebas text-3xl tracking-wide">₦{p.price}</span>
               </div>
             </div>
           ))}
