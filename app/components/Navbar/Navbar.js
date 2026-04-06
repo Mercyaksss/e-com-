@@ -4,10 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
 import CartModal from '../CartModal/CartModal';
 
 export default function Navbar() {
   const { getCartCount } = useCart();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -58,14 +60,18 @@ export default function Navbar() {
       `}</style>
 
       <nav
-        className={"fixed top-0 left-0 right-0 z-50 transition-all duration-300 " + (scrolled ? 'bg-[#0a0a0a]/95 backdrop-blur-md border-b border-[#1a1a1a]' : 'bg-transparent border-b border-transparent')}
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className={"fixed top-0 left-0 right-0 z-50 transition-all duration-300 " + (scrolled ? 'backdrop-blur-md border-b' : 'border-b border-transparent')}
+        style={{ 
+          fontFamily: "'DM Sans', sans-serif",
+          backgroundColor: scrolled ? 'var(--overlay)' : 'transparent',
+          borderColor: scrolled ? 'var(--border-subtle)' : 'transparent',
+        }}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-14 py-5 flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="text-[#f5f0eb] hover:text-[#e8530a] transition-colors no-underline shrink-0"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', letterSpacing: '0.1em' }}>
+          <Link href="/" className="hover:text-[#e8530a] transition-colors no-underline shrink-0"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.8rem', letterSpacing: '0.1em', color: 'var(--text-primary)' }}>
             SOLE<span className="text-[#e8530a]">.</span>
           </Link>
 
@@ -74,10 +80,10 @@ export default function Navbar() {
             {[
               { label: 'Home', href: '/' },
               { label: 'Shop', href: '/productspage' },
-
             ].map(({ label, href }) => (
               <Link key={label} href={href}
-                className="text-[#888] hover:text-[#f5f0eb] transition-colors text-xs tracking-[0.2em] uppercase no-underline">
+                className="hover:text-[#e8530a] transition-colors text-xs tracking-[0.2em] uppercase no-underline"
+                style={{ color: 'var(--text-muted)' }}>
                 {label}
               </Link>
             ))}
@@ -89,7 +95,8 @@ export default function Navbar() {
             {/* Search — desktop inline, mobile icon */}
             <div className="hidden md:flex items-center gap-2">
               <form onSubmit={handleSearch} className="flex items-center">
-                <div className={"flex items-center border transition-all duration-300 overflow-hidden " + (searchOpen ? 'border-[#e8530a] bg-[#111]' : 'border-transparent')}>
+                <div className={"flex items-center border transition-all duration-300 overflow-hidden " + (searchOpen ? 'border-[#e8530a]' : 'border-transparent')}
+                  style={{ backgroundColor: searchOpen ? 'var(--bg-input)' : 'transparent' }}>
                   {searchOpen && (
                     <input
                       ref={searchInputRef}
@@ -98,13 +105,14 @@ export default function Navbar() {
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                      className="bg-transparent text-[#f5f0eb] text-xs placeholder:text-[#444] px-3 py-1.5 w-44 focus:outline-none animate-search-expand"
+                      className="bg-transparent text-xs placeholder:text-[#888] px-3 py-1.5 w-44 focus:outline-none animate-search-expand"
+                      style={{ color: 'var(--text-primary)' }}
                     />
                   )}
                   <button
                     type={searchOpen ? 'submit' : 'button'}
                     onClick={() => !searchOpen && setSearchOpen(true)}
-                    className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer px-2 py-1.5"
+                    className="text-[#888] hover:text-[#e8530a] transition-colors cursor-pointer px-2 py-1.5"
                     aria-label="Search"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,6 +124,25 @@ export default function Navbar() {
               {/* Click outside to close */}
               {searchOpen && <div className="fixed inset-0 z-[-1]" onClick={() => setSearchOpen(false)} />}
             </div>
+
+            {/* Theme toggle */}
+            {mounted && (
+              <button onClick={toggleTheme}
+                className="text-[#888] hover:text-[#e8530a] transition-colors cursor-pointer"
+                aria-label="Toggle theme"
+                title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              >
+                {theme === 'light' ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" />
+                  </svg>
+                )}
+              </button>
+            )}
 
             {/* Cart button */}
             <button onClick={() => setIsCartOpen(true)}
@@ -143,15 +170,18 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden animate-slide-down bg-[#0a0a0a] border-t border-[#1a1a1a] px-6 py-6 flex flex-col gap-5">
+          <div className="md:hidden animate-slide-down border-t px-6 py-6 flex flex-col gap-5"
+            style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
             {/* Mobile search */}
-            <form onSubmit={handleSearch} className="flex items-center border border-[#2e2e2e] focus-within:border-[#e8530a] transition-colors bg-[#111]">
+            <form onSubmit={handleSearch} className="flex items-center border focus-within:border-[#e8530a] transition-colors"
+              style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--border-color)' }}>
               <input
                 type="text"
                 placeholder="Search shoes..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent text-[#f5f0eb] text-sm placeholder:text-[#444] px-4 py-3 focus:outline-none"
+                className="flex-1 bg-transparent text-sm placeholder:text-[#888] px-4 py-3 focus:outline-none"
+                style={{ color: 'var(--text-primary)' }}
               />
               <button type="submit" className="px-4 text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +196,8 @@ export default function Navbar() {
               { label: 'About', href: '#' },
             ].map(({ label, href }) => (
               <Link key={label} href={href} onClick={() => setMobileOpen(false)}
-                className="text-[#888] hover:text-[#f5f0eb] transition-colors text-xs tracking-[0.2em] uppercase no-underline">
+                className="hover:text-[#e8530a] transition-colors text-xs tracking-[0.2em] uppercase no-underline"
+                style={{ color: 'var(--text-muted)' }}>
                 {label}
               </Link>
             ))}

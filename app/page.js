@@ -10,6 +10,7 @@ import shoe3 from '../public/shoe3.png';
 import shoe4 from '../public/shoe4.png';
 import shoe5 from '../public/shoe5.png';
 import shoe6 from '../public/shoe6.png';
+import { useTheme } from './context/ThemeContext';
 
 
 
@@ -55,6 +56,7 @@ function useReveal() {
 }
 
 export default function SoleLanding() {
+  const { theme, toggleTheme } = useTheme();
   const [activeFilter, setActiveFilter] = useState('All');
   const [added, setAdded] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,7 +72,7 @@ export default function SoleLanding() {
   };
 
   return (
-    <div className="bg-[#0a0a0a] text-[#f5f0eb] overflow-x-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="overflow-x-hidden" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
         .font-bebas { font-family: 'Bebas Neue', sans-serif; }
@@ -93,20 +95,37 @@ export default function SoleLanding() {
       `}</style>
 
       {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+      <nav className="fixed top-0 left-0 right-0 z-50" style={{ mixBlendMode: theme === 'dark' ? 'difference' : 'normal' }}>
         <div className="flex items-center justify-between px-6 md:px-14 py-5 md:py-7">
-          <a href="#" className="font-bebas text-3xl tracking-widest text-[#f5f0eb]">SOLE.</a>
+          <a href="#" className="font-bebas text-3xl tracking-widest" style={{ color: 'var(--text-primary)' }}>SOLE.</a>
 
           {/* Desktop links */}
           <ul className="hidden md:flex gap-10 list-none">
             {['Shop', 'Brands', 'About', 'Contact'].map(item => (
               <li key={item}>
-                <a href={"#" + item.toLowerCase()} className="text-[#f5f0eb] text-xs tracking-[0.2em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline">
+                <a href={"#" + item.toLowerCase()} className="text-xs tracking-[0.2em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline" style={{ color: 'var(--text-primary)' }}>
                   {item}
                 </a>
               </li>
             ))}
           </ul>
+
+          <div className="flex items-center gap-4">
+            {/* Theme toggle */}
+            <button onClick={toggleTheme}
+              className="text-[#888] hover:text-[#e8530a] transition-colors cursor-pointer"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" />
+                </svg>
+              )}
+            </button>
 
           {/* Mobile hamburger */}
           <button
@@ -114,21 +133,23 @@ export default function SoleLanding() {
             onClick={() => setMenuOpen(o => !o)}
             aria-label="Toggle menu"
           >
-            <span className={"block w-6 h-px bg-[#f5f0eb] transition-all duration-300 " + (menuOpen ? 'rotate-45 translate-y-2' : '')} />
-            <span className={"block w-6 h-px bg-[#f5f0eb] transition-all duration-300 " + (menuOpen ? 'opacity-0' : '')} />
-            <span className={"block w-6 h-px bg-[#f5f0eb] transition-all duration-300 " + (menuOpen ? '-rotate-45 -translate-y-2' : '')} />
+            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'rotate-45 translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
+            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'opacity-0' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
+            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? '-rotate-45 -translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
           </button>
+          </div>
         </div>
 
         {/* Mobile dropdown */}
         {menuOpen && (
-          <div className="md:hidden animate-menu-down bg-[#0a0a0a]/95 backdrop-blur border-t border-[#1a1a1a] px-6 py-6 flex flex-col gap-5">
+          <div className="md:hidden animate-menu-down backdrop-blur border-t px-6 py-6 flex flex-col gap-5" style={{ backgroundColor: 'var(--overlay)', borderColor: 'var(--border-subtle)' }}>
             {['Shop', 'Brands', 'About', 'Contact'].map(item => (
               <a
                 key={item}
                 href={"#" + item.toLowerCase()}
                 onClick={() => setMenuOpen(false)}
-                className="text-[#f5f0eb] text-xs tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline"
+                className="text-xs tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline"
+                style={{ color: 'var(--text-primary)' }}
               >
                 {item}
               </a>
@@ -152,7 +173,7 @@ export default function SoleLanding() {
             Step Into<br />
             <span className="text-[#e8530a]">Style</span>
           </h1>
-          <p className="text-[#888] max-w-xs leading-relaxed mb-8 md:mb-12 font-light text-sm md:text-base">
+          <p className="max-w-xs leading-relaxed mb-8 md:mb-12 font-light text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
             Premium footwear from the world's leading brands. Engineered for performance, designed to turn heads.
           </p>
 
@@ -168,7 +189,7 @@ export default function SoleLanding() {
             >
               Shop Now
             </Link>
-            <a href="#about" className="text-[#f5f0eb] text-xs tracking-[0.15em] uppercase opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 no-underline">
+            <a href="#about" className="text-xs tracking-[0.15em] uppercase opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 no-underline" style={{ color: 'var(--text-primary)' }}>
               Our Story <span className="text-base">→</span>
             </a>
           </div>
@@ -176,9 +197,9 @@ export default function SoleLanding() {
 
         {/* Right — desktop only */}
         <div className="hidden md:flex relative overflow-hidden items-center justify-center">
-          <span className="absolute font-bebas text-[28vw] text-white/[0.03] tracking-tight select-none pointer-events-none">SOLE</span>
+          <span className="absolute font-bebas text-[28vw] tracking-tight select-none pointer-events-none" style={{ fontSize: '28vw', color: 'var(--text-primary)', opacity: theme === 'dark' ? '0.03' : '0.06' }}>SOLE</span>
           <div className="animate-float text-[22rem] drop-shadow-[0_40px_80px_rgba(232,83,10,0.3)] select-none"><Image src={hero} width={450} height={450} alt='hero-image' priority /></div>
-          <span className="absolute bottom-14 right-14 font-bebas text-[8rem] text-white/[0.04] leading-none select-none">01</span>
+          <span className="absolute bottom-14 right-14 font-bebas text-[8rem] leading-none select-none" style={{ color: 'var(--text-primary)', opacity: theme === 'dark' ? '0.04' : '0.08' }}>01</span>
         </div>
 
         {/* Scroll indicator — hidden on mobile */}
@@ -200,11 +221,11 @@ export default function SoleLanding() {
       </div>
 
       {/* BRANDS */}
-      <div id="brands" className="bg-[#1a1a1a] py-12 md:py-16 px-6 md:px-14">
-        <p className="text-center text-xs tracking-[0.35em] uppercase text-[#888] mb-8 md:mb-12">Trusted by sneakerheads worldwide</p>
+      <div id="brands" className="py-12 md:py-16 px-6 md:px-14" style={{ backgroundColor: 'var(--bg-card)' }}>
+        <p className="text-center text-xs tracking-[0.35em] uppercase mb-8 md:mb-12" style={{ color: 'var(--text-muted)' }}>Trusted by sneakerheads worldwide</p>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
           {brands.map(b => (
-            <span key={b} className="font-bebas text-xl md:text-2xl tracking-widest text-[#888] hover:text-[#f5f0eb] transition-colors cursor-default">{b}</span>
+            <span key={b} className="font-bebas text-xl md:text-2xl tracking-widest hover:text-[#e8530a] transition-colors cursor-default" style={{ color: 'var(--text-muted)' }}>{b}</span>
           ))}
         </div>
       </div>
@@ -213,22 +234,24 @@ export default function SoleLanding() {
       <section
         id="shop"
         ref={productsRef}
-        className={"reveal " + (productsVisible ? 'visible' : '') + " bg-[#0a0a0a] px-6 md:px-14 py-16 md:py-28"}
+        className={"reveal " + (productsVisible ? 'visible' : '') + " px-6 md:px-14 py-16 md:py-28"}
+        style={{ backgroundColor: 'var(--bg-primary)' }}
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-14 gap-6">
           <div>
             <p className="text-xs tracking-[0.35em] uppercase text-[#e8530a] mb-3">Our Collection</p>
             <h2 className="font-bebas leading-none" style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)' }}>
-              Featured<br /><span className="opacity-30">Drops</span>
+              Featured<br /><span style={{ opacity: 0.3 }}>Drops</span>
             </h2>
           </div>
-          {/* Filter pills — horizontally scrollable on mobile */}
+          {/* Filter pills */}
           <div className="flex gap-3 overflow-x-auto pb-1 md:pb-0 md:flex-wrap scrollbar-hide">
             {filters.map(f => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={"flex-shrink-0 px-5 py-2.5 border text-xs tracking-[0.1em] uppercase transition-all cursor-pointer " + (activeFilter === f ? 'border-[#e8530a] text-[#e8530a]' : 'border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
+                className={"flex-shrink-0 px-5 py-2.5 border text-xs tracking-[0.1em] uppercase transition-all cursor-pointer " + (activeFilter === f ? 'border-[#e8530a] text-[#e8530a]' : 'hover:border-[#e8530a] hover:text-[#e8530a]')}
+                style={ activeFilter !== f ? { borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}
               >
                 {f}
               </button>
@@ -236,12 +259,13 @@ export default function SoleLanding() {
           </div>
         </div>
 
-        {/* Grid — 1 col mobile, 2 col sm, 3 col md+ */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5">
           {products.map((p) => (
             <div
               key={p.id}
-              className={"bg-[#1a1a1a] relative overflow-hidden group " + (p.span ? 'sm:col-span-2' : '')}
+              className={"relative overflow-hidden group " + (p.span ? 'sm:col-span-2' : '')}
+              style={{ backgroundColor: 'var(--bg-card)' }}
             >
               {p.badge && (
                 <span className="absolute top-4 left-4 z-10 bg-[#e8530a] text-[#f5f0eb] text-[0.65rem] tracking-[0.2em] uppercase px-3 py-1">
@@ -258,7 +282,7 @@ export default function SoleLanding() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Image src={p.emoji} fill alt={p.name} sizes="(max-width: 768px) 100vw, 50vw" />
               </div>
-              <div className="px-5 md:px-7 py-5 border-t border-[#2e2e2e] flex justify-between items-end">
+              <div className="px-5 md:px-7 py-5 flex justify-between items-end" style={{ borderTop: '1px solid var(--border-color)' }}>
                 <div>
                   <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#e8530a] mb-1">{p.brand}</p>
                   <p className="text-base font-medium">{p.name}</p>
@@ -274,12 +298,13 @@ export default function SoleLanding() {
       <section
         id="about"
         ref={featuresRef}
-        className={"reveal " + (featuresVisible ? 'visible' : '') + " bg-[#1a1a1a] px-6 md:px-14 py-16 md:py-28 grid md:grid-cols-2 gap-10 md:gap-20 items-center"}
+        className={"reveal " + (featuresVisible ? 'visible' : '') + " px-6 md:px-14 py-16 md:py-28 grid md:grid-cols-2 gap-10 md:gap-20 items-center"}
+        style={{ backgroundColor: 'var(--bg-card)' }}
       >
         {/* Visual — desktop only */}
         <div className="hidden md:flex items-center justify-center h-[500px]">
           <div className="relative w-[380px] h-[380px] animate-spin-slow">
-            <div className="absolute inset-0 rounded-full border border-[#2e2e2e]" />
+            <div className="absolute inset-0 rounded-full border" style={{ borderColor: 'var(--border-color)' }} />
             <div className="absolute inset-5 rounded-full border border-dashed border-[#e8530a]/30" />
             {[
               'top-[-5px] left-[calc(50%-5px)]',
@@ -304,7 +329,7 @@ export default function SoleLanding() {
           <div className="flex flex-col gap-8 md:gap-10">
             {features.map(f => (
               <div key={f.num} className="flex gap-6 items-start group">
-                <span className="font-bebas text-4xl md:text-5xl text-white/[0.08] leading-none min-w-[48px] md:min-w-[56px] group-hover:text-[#e8530a] transition-colors">
+                <span className="font-bebas text-4xl md:text-5xl leading-none min-w-[48px] md:min-w-[56px] group-hover:text-[#e8530a] transition-colors" style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
                   {f.num}
                 </span>
                 <div>
@@ -320,7 +345,8 @@ export default function SoleLanding() {
       {/* TESTIMONIALS */}
       <section
         ref={testimonialsRef}
-        className={"reveal " + (testimonialsVisible ? 'visible' : '') + " bg-[#0a0a0a] px-6 md:px-14 py-16 md:py-28"}
+        className={"reveal " + (testimonialsVisible ? 'visible' : '') + " px-6 md:px-14 py-16 md:py-28"}
+        style={{ backgroundColor: 'var(--bg-primary)' }}
       >
         <p className="text-xs tracking-[0.35em] uppercase text-[#e8530a] mb-4">Customer Love</p>
         <h2 className="font-bebas leading-none mb-10 md:mb-14" style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)' }}>
@@ -328,10 +354,10 @@ export default function SoleLanding() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0.5">
           {testimonials.map((t) => (
-            <div key={t.name} className="bg-[#1a1a1a] p-7 md:p-10 relative overflow-hidden">
+            <div key={t.name} className="p-7 md:p-10 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-card)' }}>
               <span className="absolute -top-5 right-5 font-bebas text-[12rem] text-[#e8530a]/[0.06] leading-none select-none pointer-events-none">"</span>
               <div className="text-[#e8530a] tracking-[3px] text-sm mb-5">★★★★★</div>
-              <p className="text-sm leading-loose text-[#f5f0eb]/80 font-light italic mb-7">{t.text}</p>
+              <p className="text-sm leading-loose font-light italic mb-7" style={{ color: 'var(--text-secondary)' }}>{t.text}</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#e8530a] flex items-center justify-center text-sm font-medium shrink-0">
                   {t.initials}
@@ -370,17 +396,17 @@ export default function SoleLanding() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#1a1a1a] px-6 md:px-14 pt-14 md:pt-20 pb-10">
+      <footer className="px-6 md:px-14 pt-14 md:pt-20 pb-10" style={{ backgroundColor: 'var(--bg-card)' }}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-14 mb-10 md:mb-14">
           {/* Brand col — full width on mobile */}
           <div className="col-span-2 md:col-span-1">
             <div className="font-bebas text-5xl tracking-wider mb-4">SOLE.</div>
-            <p className="text-sm text-[#888] leading-relaxed font-light max-w-[260px] mb-8">
+            <p className="text-sm leading-relaxed font-light max-w-[260px] mb-8" style={{ color: 'var(--text-muted)' }}>
               Premium footwear for those who know that great shoes aren't an expense — they're an investment.
             </p>
             <div className="flex gap-3">
               {['𝕏', 'in', 'ig', 'yt'].map(s => (
-                <a key={s} href="#" className="w-10 h-10 border border-[#2e2e2e] flex items-center justify-center text-sm text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] transition-all no-underline">
+                <a key={s} href="#" className="w-10 h-10 flex items-center justify-center text-sm hover:border-[#e8530a] hover:text-[#e8530a] transition-all no-underline" style={{ border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
                   {s}
                 </a>
               ))}
@@ -393,22 +419,25 @@ export default function SoleLanding() {
             { title: 'Help', links: ['Size Guide', 'Returns', 'Track Order', 'Contact Us'] },
           ].map(col => (
             <div key={col.title}>
-              <h4 className="text-xs tracking-[0.3em] uppercase text-[#f5f0eb] mb-4 md:mb-6">{col.title}</h4>
+              <h4 className="text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>{col.title}</h4>
               <ul className="flex flex-col gap-3 list-none">
                 {col.links.map(link => (
                   <li key={link}>
-                    <a href="#" className="text-sm text-[#888] hover:text-[#f5f0eb] transition-colors no-underline">{link}</a>
+                    <a href="#" className="text-sm hover:text-[#e8530a] transition-colors no-underline" style={{ color: 'var(--text-muted)' }}>{link}</a>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <div className="border-t border-[#2e2e2e] pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-          <p className="text-xs text-[#888]">© 2025 SOLE. All rights reserved.</p>
+        <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left" style={{ borderColor: 'var(--border-color)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>© 2025 SOLE. All rights reserved.</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Designed & developed by <span className="text-[#e8530a] font-medium">Mercy Yakubu</span>
+          </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Settings'].map(l => (
-              <a key={l} href="#" className="text-xs text-[#888] hover:text-[#f5f0eb] transition-colors no-underline">{l}</a>
+              <a key={l} href="#" className="text-xs hover:text-[#e8530a] transition-colors no-underline" style={{ color: 'var(--text-muted)' }}>{l}</a>
             ))}
           </div>
         </div>

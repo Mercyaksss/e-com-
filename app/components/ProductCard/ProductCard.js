@@ -30,7 +30,7 @@ export default function ProductCard({ shoe, priority = false }) {
 
   return (
     <Link href={`/product/${id}`}>
-      <div className={`group bg-[#1a1a1a] overflow-hidden relative cursor-pointer h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`}>
+      <div className={`group overflow-hidden relative cursor-pointer h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`} style={{ backgroundColor: 'var(--bg-card)' }}>
 
         {/* Badge — stock badge takes priority over shoe.badge */}
         {stockBadge ? (
@@ -44,7 +44,7 @@ export default function ProductCard({ shoe, priority = false }) {
         ) : null}
 
         {/* Image */}
-        <div className="relative h-64 overflow-hidden bg-[#111]">
+        <div className="relative h-64 overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.12),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
             <Image
               src={image}
@@ -57,17 +57,17 @@ export default function ProductCard({ shoe, priority = false }) {
         </div>
 
         {/* Content */}
-        <div className="px-6 py-5 border-t border-[#2e2e2e] flex flex-col flex-1">
+        <div className="px-6 py-5 flex flex-col flex-1" style={{ borderTop: '1px solid var(--border-color)' }}>
           <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#e8530a] mb-1">{shoe.brand}</p>
-          <h3 className="text-[#f5f0eb] text-base font-medium mb-2 group-hover:text-[#e8530a] transition-colors">
+          <h3 className="text-base font-medium mb-2 group-hover:text-[#e8530a] transition-colors" style={{ color: 'var(--text-primary)' }}>
             {shoe.name}
           </h3>
-          <p className="text-[#888] text-sm mb-4 line-clamp-2 font-light leading-relaxed">{shoe.description}</p>
+          <p className="text-sm mb-4 line-clamp-2 font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{shoe.description}</p>
 
           {/* Color tags */}
           <div className="flex flex-wrap gap-2 mb-5">
             {colors.slice(0, 3).map((color, i) => (
-              <span key={i} className="text-[0.65rem] tracking-[0.1em] uppercase border border-[#2e2e2e] text-[#888] px-2.5 py-1">
+              <span key={i} className="text-[0.65rem] tracking-[0.1em] uppercase px-2.5 py-1" style={{ border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
                 {color}
               </span>
             ))}
@@ -75,12 +75,10 @@ export default function ProductCard({ shoe, priority = false }) {
 
           {/* Price + CTA */}
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-2xl tracking-wide text-[#f5f0eb]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+            <span className="text-2xl tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif", color: 'var(--text-primary)' }}>
               ₦{shoe.price}
             </span>
-            <div className="bg-[#e8530a] text-white px-3 py-2 text-xs tracking-[0.15em] uppercase font-medium
-              group-hover:bg-[#ff6b2b] transition-colors"
+            <div className="bg-[#e8530a] text-white px-3 py-2 text-xs tracking-[0.15em] uppercase font-medium group-hover:bg-[#ff6b2b] transition-colors"
               style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}>
               View Details
             </div>

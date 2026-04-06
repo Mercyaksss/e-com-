@@ -108,11 +108,11 @@ export default function ProductPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-[#0a0a0a] pt-36">
+        <main className="min-h-screen pt-36" style={{ backgroundColor: 'var(--bg-primary)' }}>
           <div className="max-w-7xl mx-auto px-6 md:px-14">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-              <div className="bg-[#111] h-[560px] animate-pulse" />
-              <div className="bg-[#111] h-[560px] animate-pulse" />
+              <div className="h-[560px] animate-pulse" style={{ backgroundColor: 'var(--bg-card)' }} />
+              <div className="h-[560px] animate-pulse" style={{ backgroundColor: 'var(--bg-card)' }} />
             </div>
           </div>
         </main>
@@ -125,13 +125,13 @@ export default function ProductPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center px-6">
+        <main className="min-h-screen pt-20 flex items-center justify-center px-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
           <div className="text-center">
             <span className="text-8xl opacity-20 select-none block mb-6">👟</span>
-            <h2 className="text-[#f5f0eb] mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem' }}>
+            <h2 className="mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem', color: 'var(--text-primary)' }}>
               Product Not Found
             </h2>
-            <p className="text-[#888] text-sm font-light mb-8">This product does not exist or has been removed.</p>
+            <p className="text-sm font-light mb-8" style={{ color: 'var(--text-muted)' }}>This product does not exist or has been removed.</p>
             <button
               onClick={() => router.push('/productspage')}
               className="text-xs tracking-[0.2em] uppercase text-[#e8530a] border border-[#e8530a] px-8 py-3 hover:bg-[#e8530a] hover:text-white transition-all cursor-pointer"
@@ -160,13 +160,14 @@ export default function ProductPage() {
 
       <Navbar />
 
-      <main className="min-h-screen bg-[#0a0a0a]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <main className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-primary)' }}>
         <div className="max-w-7xl mx-auto px-6 md:px-14 pt-24 md:pt-36 pb-16 md:pb-24">
 
           {/* Back button */}
           <button
             onClick={() => router.push('/productspage')}
-            className="flex items-center gap-2 text-[#888] hover:text-[#f5f0eb] transition-colors mb-8 md:mb-12 text-sm tracking-[0.1em] uppercase group cursor-pointer"
+            className="flex items-center gap-2 hover:text-[#e8530a] transition-colors mb-8 md:mb-12 text-sm tracking-[0.1em] uppercase group cursor-pointer"
+            style={{ color: 'var(--text-muted)' }}
           >
             <span className="group-hover:-translate-x-1 transition-transform">&larr;</span>
             Back to Shop
@@ -176,7 +177,8 @@ export default function ProductPage() {
 
             {/* IMAGE CAROUSEL */}
             <div
-              className="carousel-wrap animate-fade-up bg-[#111] border border-[#1a1a1a] relative overflow-hidden group h-[300px] sm:h-[400px] md:h-[560px]"
+              className="carousel-wrap animate-fade-up relative overflow-hidden group h-[300px] sm:h-[400px] md:h-[560px]"
+              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
@@ -193,8 +195,8 @@ export default function ProductPage() {
                 />
               )}
               <span
-                className="absolute bottom-6 left-6 text-white/[0.06] select-none pointer-events-none leading-none z-20"
-                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}
+                className="absolute bottom-6 left-6 select-none pointer-events-none leading-none z-20"
+                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 5rem)', color: 'var(--text-primary)', opacity: 0.06 }}
               >
                 {shoe.brand}
               </span>
@@ -223,18 +225,18 @@ export default function ProductPage() {
             </div>
 
             {/* PRODUCT INFO */}
-            <div className="animate-fade-up-2 bg-[#111] border border-[#1a1a1a] px-6 md:px-10 py-8 md:py-12 flex flex-col">
+            <div className="animate-fade-up-2 px-6 md:px-10 py-8 md:py-12 flex flex-col" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
 
               <div className="mb-6 md:mb-8">
                 <span className="flex items-center gap-3 text-[#e8530a] text-xs tracking-[0.3em] uppercase mb-4">
                   <span className="w-6 h-px bg-[#e8530a]" />
                   {shoe.brand}
                 </span>
-                <h1 className="text-[#f5f0eb] leading-none mb-4 md:mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.2rem, 5vw, 4.5rem)' }}>
+                <h1 className="leading-none mb-4 md:mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2.2rem, 5vw, 4.5rem)', color: 'var(--text-primary)' }}>
                   {shoe.name}
                 </h1>
                 <div className="flex items-center gap-4">
-                  <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(2rem, 5vw, 3rem)', color: 'var(--text-primary)' }}>
                     ₦{shoe.price}
                   </span>
                   {stockLabel && (
@@ -245,17 +247,17 @@ export default function ProductPage() {
                 </div>
               </div>
 
-              <p className="text-[#888] text-sm md:text-base leading-relaxed font-light mb-8 md:mb-10 border-t border-[#1a1a1a] pt-6 md:pt-8">
+              <p className="text-sm md:text-base leading-relaxed font-light mb-8 md:mb-10 pt-6 md:pt-8" style={{ color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)' }}>
                 {shoe.description}
               </p>
 
               {/* Full out of stock state */}
               {isOutOfStock ? (
                 <div className="flex flex-col flex-1 justify-between">
-                  <div className="border border-[#2e2e2e] px-6 py-8 text-center mb-6">
-                    <p className="text-[#888] text-xs tracking-[0.25em] uppercase mb-2">Availability</p>
-                    <p className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', letterSpacing: '0.1em' }}>Out of Stock</p>
-                    <p className="text-[#888] text-xs font-light mt-2">This product is currently unavailable.</p>
+                  <div className="px-6 py-8 text-center mb-6" style={{ border: '1px solid var(--border-color)' }}>
+                    <p className="text-xs tracking-[0.25em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>Availability</p>
+                    <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', letterSpacing: '0.1em', color: 'var(--text-primary)' }}>Out of Stock</p>
+                    <p className="text-xs font-light mt-2" style={{ color: 'var(--text-muted)' }}>This product is currently unavailable.</p>
                   </div>
                   <button
                     disabled
@@ -269,15 +271,16 @@ export default function ProductPage() {
                 <>
                   {/* Colour */}
                   <div className="mb-6 md:mb-8">
-                    <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3 md:mb-4">
-                      Colour &mdash; <span className="text-[#f5f0eb] capitalize">{selectedColor}</span>
+                    <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3 md:mb-4" style={{ color: 'var(--text-muted)' }}>
+                      Colour &mdash; <span className="capitalize" style={{ color: 'var(--text-primary)' }}>{selectedColor}</span>
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {shoe.variants.map(variant => (
                         <button
                           key={variant.color}
                           onClick={() => handleColorChange(variant.color)}
-                          className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
+                          className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'hover:border-[#e8530a] hover:text-[#e8530a]')}
+                          style={ selectedColor !== variant.color ? { border: '1px solid var(--border-color)', color: 'var(--text-muted)' } : {}}
                         >
                           {variant.color}
                         </button>
@@ -296,7 +299,8 @@ export default function ProductPage() {
                           key={size}
                           disabled={stock === 0}
                           onClick={() => { setSelectedSize(size); setSizeError(false); }}
-                          className={"py-2.5 md:py-3 text-sm font-medium transition-all " + (stock === 0 ? 'border border-[#1a1a1a] text-[#333] cursor-not-allowed line-through' : 'cursor-pointer ' + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'border text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : 'border-[#2e2e2e]')))}
+                          className={"py-2.5 md:py-3 text-sm font-medium transition-all " + (stock === 0 ? 'cursor-not-allowed line-through' : 'cursor-pointer ' + (selectedSize === size ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'hover:border-[#e8530a] hover:text-[#e8530a] ' + (sizeError ? 'border-red-400/50' : '')))}
+                          style={ stock === 0 ? { border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', opacity: 0.4 } : selectedSize !== size ? { border: '1px solid var(--border-color)', color: 'var(--text-muted)' } : {}}
                         >
                           {size}
                         </button>
@@ -316,10 +320,9 @@ export default function ProductPage() {
                 </>
               )}
 
-              {/* Product details grid — hidden when out of stock */}
               {!isOutOfStock && (
-              <div className="mt-6 md:mt-8 border-t border-[#1a1a1a] pt-6 md:pt-8">
-                <p className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-4 md:mb-5">Product Details</p>
+              <div className="mt-6 md:mt-8 pt-6 md:pt-8" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                <p className="text-[0.65rem] tracking-[0.25em] uppercase mb-4 md:mb-5" style={{ color: 'var(--text-muted)' }}>Product Details</p>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { label: 'Category', value: shoe.category || '—' },
@@ -327,9 +330,9 @@ export default function ProductPage() {
                     { label: 'Sizes',    value: availableSizes.length + ' available' },
                     { label: 'In Stock', value: availableSizes.filter(s => s.stock > 0).length + ' sizes' },
                   ].map(detail => (
-                    <div key={detail.label} className="bg-[#0a0a0a] px-3 md:px-4 py-3">
-                      <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#888] mb-1">{detail.label}</p>
-                      <p className="text-[#f5f0eb] text-sm capitalize font-medium">{detail.value}</p>
+                    <div key={detail.label} className="px-3 md:px-4 py-3" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                      <p className="text-[0.6rem] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-muted)' }}>{detail.label}</p>
+                      <p className="text-sm capitalize font-medium" style={{ color: 'var(--text-primary)' }}>{detail.value}</p>
                     </div>
                   ))}
                 </div>
@@ -340,6 +343,11 @@ export default function ProductPage() {
           </div>
         </div>
       </main>
+      <footer className="py-6 text-center" style={{ backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          Designed & developed by <span className="text-[#e8530a] font-medium">Mercy Yakubu</span>
+        </p>
+      </footer>
     </>
   );
 }

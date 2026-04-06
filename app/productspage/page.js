@@ -69,7 +69,7 @@ export default function ProductsPage() {
         @keyframes fade-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fade-up 0.6s ease forwards; }
         @keyframes shimmer { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
-        .skeleton { animation: shimmer 1.5s ease-in-out infinite; background: #1a1a1a; }
+        .skeleton { animation: shimmer 1.5s ease-in-out infinite; background: var(--bg-card); }
 
         .page-layout { display: flex; flex-direction: column; gap: 2.5rem; }
         @media (min-width: 1180px) { .page-layout { flex-direction: row; } }
@@ -87,13 +87,13 @@ export default function ProductsPage() {
 
       <Navbar />
 
-      <main className="min-h-screen bg-[#0a0a0a]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <main className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-primary)' }}>
 
         {/* PAGE HEADER */}
-        <div className="relative border-b border-[#1a1a1a] overflow-hidden">
+        <div className="relative overflow-hidden" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <span
-            className="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none text-white/[0.03] leading-none"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(5rem, 20vw, 18rem)' }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none leading-none"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(5rem, 20vw, 18rem)', color: 'var(--text-primary)', opacity: 0.03 }}
           >
             SHOP
           </span>
@@ -102,7 +102,7 @@ export default function ProductsPage() {
               <span className="w-8 h-px bg-[#e8530a]" />
               All Products
             </span>
-            <h1 className="leading-none text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3rem, 9vw, 6rem)' }}>
+            <h1 className="leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3rem, 9vw, 6rem)', color: 'var(--text-primary)' }}>
               The Full <span className="text-[#e8530a]">Collection</span>
             </h1>
           </div>
@@ -114,12 +114,13 @@ export default function ProductsPage() {
 
             {/* MOBILE FILTER TOGGLE */}
             <div className="flex items-center justify-between lg:hidden mb-2">
-              <p className="text-[#888] text-sm font-light">
-                {!loading && <span><span className="text-[#f5f0eb] font-medium">{products.length}</span> products</span>}
+              <p className="text-sm font-light" style={{ color: 'var(--text-muted)' }}>
+                {!loading && <span><span className="font-medium" style={{ color: 'var(--text-primary)' }}>{products.length}</span> products</span>}
               </p>
               <button
                 onClick={() => setFilterOpen(f => !f)}
-                className="flex items-center gap-2 px-4 py-2.5 border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] transition-all text-xs tracking-[0.15em] uppercase cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2.5 text-xs tracking-[0.15em] uppercase transition-all cursor-pointer hover:border-[#e8530a] hover:text-[#e8530a]"
+                style={{ border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 12h10M11 20h2" />
@@ -140,19 +141,19 @@ export default function ProductsPage() {
 
               {/* Results bar */}
               {!loading && (
-                <div className="flex items-center justify-between mb-6 md:mb-8 pb-5 border-b border-[#1a1a1a]">
-                  <p className="text-[#888] text-sm font-light">
+                <div className="flex items-center justify-between mb-6 md:mb-8 pb-5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                  <p className="text-sm font-light" style={{ color: 'var(--text-muted)' }}>
                     Showing{' '}
-                    <span className="text-[#f5f0eb] font-medium">
+                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                       {products.length > 0
                         ? (currentPage - 1) * PRODUCTS_PER_PAGE + 1 + ' to ' + Math.min(currentPage * PRODUCTS_PER_PAGE, products.length)
                         : '0'}
                     </span>
-                    {' '}of <span className="text-[#f5f0eb] font-medium">{products.length}</span> results
+                    {' '}of <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{products.length}</span> results
                   </p>
                   {totalPages > 1 && (
-                    <p className="text-[#888] text-xs tracking-[0.1em]">
-                      Page <span className="text-[#f5f0eb]">{currentPage}</span> / {totalPages}
+                    <p className="text-xs tracking-[0.1em]" style={{ color: 'var(--text-muted)' }}>
+                      Page <span style={{ color: 'var(--text-primary)' }}>{currentPage}</span> / {totalPages}
                     </p>
                   )}
                 </div>
@@ -181,25 +182,27 @@ export default function ProductsPage() {
                   {/* PAGINATION */}
                   {totalPages > 1 && (
                     <div className="mt-10 md:mt-12 flex flex-col items-center gap-5">
-                      <p className="text-[#888] text-xs tracking-[0.15em] uppercase">
+                      <p className="text-xs tracking-[0.15em] uppercase" style={{ color: 'var(--text-muted)' }}>
                         Showing {(currentPage - 1) * PRODUCTS_PER_PAGE + 1} to {Math.min(currentPage * PRODUCTS_PER_PAGE, products.length)} of {products.length} products
                       </p>
                       <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <button
                           onClick={() => goToPage(currentPage - 1)}
                           disabled={currentPage === 1}
-                          className={"flex items-center gap-2 px-3 md:px-4 py-2.5 text-xs tracking-[0.15em] uppercase border transition-all " + (currentPage === 1 ? 'border-[#1a1a1a] text-[#444] cursor-not-allowed' : 'border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] cursor-pointer')}
+                          className={"flex items-center gap-2 px-3 md:px-4 py-2.5 text-xs tracking-[0.15em] uppercase border transition-all " + (currentPage === 1 ? 'cursor-not-allowed' : 'hover:border-[#e8530a] hover:text-[#e8530a] cursor-pointer')}
+                          style={ currentPage === 1 ? { borderColor: 'var(--border-subtle)', color: 'var(--text-muted)', opacity: 0.4 } : { borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}
                         >
                           Prev
                         </button>
                         {getPageNumbers().map((page, i) =>
                           page === '...' ? (
-                            <span key={'e' + i} className="w-8 md:w-9 h-8 md:h-9 flex items-center justify-center text-[#444] text-sm">...</span>
+                            <span key={'e' + i} className="w-8 md:w-9 h-8 md:h-9 flex items-center justify-center text-sm" style={{ color: 'var(--text-muted)' }}>...</span>
                           ) : (
                             <button
                               key={page}
                               onClick={() => goToPage(page)}
-                              className={"w-8 md:w-9 h-8 md:h-9 flex items-center justify-center text-xs font-medium border transition-all cursor-pointer " + (currentPage === page ? 'bg-[#e8530a] border-[#e8530a] text-white' : 'border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a]')}
+                              className={"w-8 md:w-9 h-8 md:h-9 flex items-center justify-center text-xs font-medium border transition-all cursor-pointer " + (currentPage === page ? 'bg-[#e8530a] border-[#e8530a] text-white' : 'hover:border-[#e8530a] hover:text-[#e8530a]')}
+                              style={ currentPage !== page ? { borderColor: 'var(--border-color)', color: 'var(--text-muted)' } : {}}
                             >
                               {page}
                             </button>
@@ -208,7 +211,8 @@ export default function ProductsPage() {
                         <button
                           onClick={() => goToPage(currentPage + 1)}
                           disabled={currentPage === totalPages}
-                          className={"flex items-center gap-2 px-3 md:px-4 py-2.5 text-xs tracking-[0.15em] uppercase border transition-all " + (currentPage === totalPages ? 'border-[#1a1a1a] text-[#444] cursor-not-allowed' : 'border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] cursor-pointer')}
+                          className={"flex items-center gap-2 px-3 md:px-4 py-2.5 text-xs tracking-[0.15em] uppercase border transition-all " + (currentPage === totalPages ? 'cursor-not-allowed' : 'hover:border-[#e8530a] hover:text-[#e8530a] cursor-pointer')}
+                          style={ currentPage === totalPages ? { borderColor: 'var(--border-subtle)', color: 'var(--text-muted)', opacity: 0.4 } : { borderColor: 'var(--border-color)', color: 'var(--text-muted)' }}
                         >
                           Next
                         </button>
@@ -222,10 +226,10 @@ export default function ProductsPage() {
               {!loading && products.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-24 md:py-32 text-center">
                   <span className="text-8xl mb-6 opacity-30 select-none">👟</span>
-                  <h3 className="text-[#f5f0eb] mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem' }}>
+                  <h3 className="mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.5rem', color: 'var(--text-primary)' }}>
                     No Products Found
                   </h3>
-                  <p className="text-[#888] text-sm font-light max-w-xs leading-relaxed">
+                  <p className="text-sm font-light max-w-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                     Try adjusting your filters or clearing them to see the full collection.
                   </p>
                 </div>

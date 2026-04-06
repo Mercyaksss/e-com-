@@ -41,8 +41,8 @@ export default function FilterSidebar({ onFilterChange }) {
 
   const hasActiveFilters = selectedBrand || selectedCategory || priceRange.min || priceRange.max;
 
-  const selectClass = "w-full bg-[#111] text-[#f5f0eb] px-4 py-3 text-sm border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none transition-colors appearance-none cursor-pointer";
-  const inputClass = "w-full bg-[#111] text-[#f5f0eb] px-4 py-3 text-sm border border-[#2e2e2e] focus:border-[#e8530a] focus:outline-none transition-colors placeholder:text-[#444]";
+  const selectClass = "w-full px-4 py-3 text-sm border focus:border-[#e8530a] focus:outline-none transition-colors appearance-none cursor-pointer";
+  const inputClass = "w-full px-4 py-3 text-sm border focus:border-[#e8530a] focus:outline-none transition-colors placeholder:text-[#888]";
 
   return (
     <>
@@ -53,12 +53,12 @@ export default function FilterSidebar({ onFilterChange }) {
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       `}</style>
 
-      <div className="bg-[#111] border border-[#1a1a1a] sticky top-24 overflow-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="sticky top-24 overflow-hidden" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
 
-        <div className="px-6 py-5 border-b border-[#1a1a1a] flex items-center justify-between">
+        <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-3">
             <span className="w-5 h-px bg-[#e8530a]" />
-            <span className="text-[#f5f0eb] tracking-[0.2em] text-sm uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
+            <span className="tracking-[0.2em] text-sm uppercase" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: 'var(--text-primary)' }}>
               Filters
             </span>
           </div>
@@ -68,9 +68,9 @@ export default function FilterSidebar({ onFilterChange }) {
         <div className="px-6 py-6 flex flex-col gap-7">
 
           <div>
-            <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3">Brand</label>
+            <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Brand</label>
             <div className="relative">
-              <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} className={selectClass + " select-arrow"}>
+              <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
                 <option value="">All Brands</option>
                 {brands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
               </select>
@@ -78,9 +78,9 @@ export default function FilterSidebar({ onFilterChange }) {
           </div>
 
           <div>
-            <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3">Category</label>
+            <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Category</label>
             <div className="relative">
-              <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass + " select-arrow"}>
+              <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
                 <option value="">All Categories</option>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
@@ -88,15 +88,17 @@ export default function FilterSidebar({ onFilterChange }) {
           </div>
 
           <div>
-            <label className="block text-[0.65rem] tracking-[0.25em] uppercase text-[#888] mb-3">Price Range (₦)</label>
+            <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Price Range (₦)</label>
             <div className="flex items-center gap-2">
               <input type="number" placeholder="Min" value={priceRange.min}
                 onChange={e => setPriceRange({ ...priceRange, min: e.target.value })}
-                className={inputClass} />
-              <span className="text-[#444] text-sm shrink-0">to</span>
+                className={inputClass}
+                style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
+              <span className="text-sm shrink-0" style={{ color: 'var(--text-muted)' }}>to</span>
               <input type="number" placeholder="Max" value={priceRange.max}
                 onChange={e => setPriceRange({ ...priceRange, max: e.target.value })}
-                className={inputClass} />
+                className={inputClass}
+                style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
             </div>
           </div>
 
@@ -131,7 +133,8 @@ export default function FilterSidebar({ onFilterChange }) {
             </button>
             {hasActiveFilters && (
               <button onClick={handleReset}
-                className="w-full bg-transparent text-[#888] py-3 text-xs tracking-[0.2em] uppercase border border-[#2e2e2e] hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer">
+                className="w-full bg-transparent py-3 text-xs tracking-[0.2em] uppercase border hover:border-[#e8530a] hover:text-[#e8530a] transition-all cursor-pointer"
+                style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>
                 Clear All
               </button>
             )}
