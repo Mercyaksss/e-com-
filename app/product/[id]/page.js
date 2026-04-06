@@ -176,7 +176,7 @@ export default function ProductPage() {
 
             {/* IMAGE CAROUSEL */}
             <div
-              className="carousel-wrap animate-fade-up bg-[#111] border border-[#1a1a1a] relative overflow-hidden group"
+              className="carousel-wrap animate-fade-up bg-[#111] border border-[#1a1a1a] relative overflow-hidden group h-[300px] sm:h-[400px] md:h-[560px]"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
