@@ -28,8 +28,8 @@ function SuccessModal({ order, onClose }) {
         @keyframes check-draw { from { stroke-dashoffset:60; } to { stroke-dashoffset:0; } }
         .animate-check { animation: check-draw 0.5s ease 0.3s forwards; stroke-dashoffset:60; stroke-dasharray:60; }
       `}</style>
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center px-6">
-        <div className="animate-scale-in bg-[#111] border border-[#1a1a1a] w-full max-w-md" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center px-6">
+        <div className="animate-scale-in w-full max-w-md" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
           <div className="h-1 bg-[#e8530a] w-full" />
           <div className="px-10 py-12 text-center">
             <div className="w-16 h-16 border-2 border-[#e8530a] flex items-center justify-center mx-auto mb-8">
@@ -37,36 +37,36 @@ function SuccessModal({ order, onClose }) {
                 <path className="animate-check" stroke="#e8530a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span className="text-[#f5f0eb] block mb-2" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', letterSpacing: '0.1em' }}>
+            <span className="block mb-2" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', letterSpacing: '0.1em', color: 'var(--text-primary)' }}>
               Order Confirmed
             </span>
-            <p className="text-[#888] text-sm font-light mb-1">
-              Thank you, <span className="text-[#f5f0eb]">{order.firstName}</span>!
+            <p className="text-sm font-light mb-1" style={{ color: 'var(--text-muted)' }}>
+              Thank you, <span style={{ color: 'var(--text-primary)' }}>{order.firstName}</span>!
             </p>
-            <p className="text-[#888] text-sm font-light mb-8">
+            <p className="text-sm font-light mb-8" style={{ color: 'var(--text-muted)' }}>
               Your order <span className="text-[#e8530a] font-medium">{order.orderId}</span> has been placed successfully.
             </p>
-            <div className="bg-[#0a0a0a] border border-[#1a1a1a] text-left mb-8">
+            <div className="text-left mb-8" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
               {order.items.map((item, i) => (
-                <div key={i} className="flex justify-between items-center px-5 py-3 border-b border-[#1a1a1a] last:border-0">
+                <div key={i} className="flex justify-between items-center px-5 py-3 last:border-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                   <div>
-                    <p className="text-[#f5f0eb] text-xs font-medium">{item.name}</p>
-                    <p className="text-[#888] text-[0.65rem] tracking-[0.1em] uppercase">Size {item.selectedSize} · {item.selectedColor}</p>
+                    <p className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{item.name}</p>
+                    <p className="text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: 'var(--text-muted)' }}>Size {item.selectedSize} · {item.selectedColor}</p>
                   </div>
-                  <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem' }}>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                     ₦{(item.price * item.quantity).toLocaleString()}
                   </span>
                 </div>
               ))}
-              <div className="flex justify-between items-center px-5 py-4 border-t border-[#2e2e2e]">
-                <span className="text-[0.65rem] tracking-[0.2em] uppercase text-[#888]">Total Paid</span>
-                <span className="text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem' }}>
+              <div className="flex justify-between items-center px-5 py-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+                <span className="text-[0.65rem] tracking-[0.2em] uppercase" style={{ color: 'var(--text-muted)' }}>Total Paid</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', color: 'var(--text-primary)' }}>
                   ₦{Number(order.total).toLocaleString()}
                 </span>
               </div>
             </div>
-            <p className="text-[#888] text-xs font-light mb-8">
-              A confirmation will be sent to <span className="text-[#f5f0eb]">{order.email}</span>
+            <p className="text-xs font-light mb-8" style={{ color: 'var(--text-muted)' }}>
+              A confirmation will be sent to <span style={{ color: 'var(--text-primary)' }}>{order.email}</span>
             </p>
             <Link href="/" onClick={onClose}
               className="block w-full bg-[#e8530a] text-white py-4 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors no-underline text-center"

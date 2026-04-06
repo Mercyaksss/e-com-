@@ -24,17 +24,17 @@ export default function CartModal({ isOpen, onClose }) {
 
       {/* Drawer */}
       <div
-        className="animate-slide-in fixed right-0 top-0 h-full w-full sm:w-[420px] md:w-[480px] bg-[#0f0f0f] z-50 flex flex-col border-l border-[#1a1a1a]"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        className="animate-slide-in fixed right-0 top-0 h-full w-full sm:w-[420px] md:w-[480px] z-50 flex flex-col"
+        style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-card)', borderLeft: '1px solid var(--border-subtle)' }}
       >
 
         {/* Header */}
-        <div className="px-5 sm:px-8 py-5 sm:py-6 border-b border-[#1a1a1a] flex items-center justify-between shrink-0">
+        <div className="px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between shrink-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-3">
             <span className="w-5 h-px bg-[#e8530a]" />
             <h2
-              className="text-[#f5f0eb] tracking-[0.15em]"
-              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem' }}
+              className="tracking-[0.15em]"
+              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.6rem', color: 'var(--text-primary)' }}
             >
               Your Cart
             </h2>
@@ -46,7 +46,8 @@ export default function CartModal({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer text-lg"
+            className="hover:text-[#e8530a] transition-colors cursor-pointer text-lg"
+            style={{ color: 'var(--text-muted)' }}
           >
             x
           </button>
@@ -57,12 +58,12 @@ export default function CartModal({ isOpen, onClose }) {
           <div className="flex-1 flex flex-col items-center justify-center text-center px-6 sm:px-8">
             <span className="text-7xl opacity-20 select-none mb-6">👟</span>
             <h3
-              className="text-[#f5f0eb] mb-2"
-              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem' }}
+              className="mb-2"
+              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2rem', color: 'var(--text-primary)' }}
             >
               Cart is Empty
             </h3>
-            <p className="text-[#888] text-sm font-light mb-8 leading-relaxed">
+            <p className="text-sm font-light mb-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Looks like you haven't added anything yet. Go find your next pair.
             </p>
             <button
@@ -80,48 +81,44 @@ export default function CartModal({ isOpen, onClose }) {
               {cart.map(item => (
                 <div
                   key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
-                  className="bg-[#1a1a1a] p-4 sm:p-5 flex gap-3 sm:gap-4"
+                  className="p-4 sm:p-5 flex gap-3 sm:gap-4"
+                  style={{ backgroundColor: 'var(--bg-secondary)' }}
                 >
                   {/* Image */}
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#111] shrink-0 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 shrink-0 overflow-hidden" style={{ backgroundColor: 'var(--bg-card)' }}>
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                   </div>
 
                   {/* Details + quantity/price */}
                   <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                     <p className="text-[0.6rem] tracking-[0.2em] uppercase text-[#e8530a]">{item.brand}</p>
-                    <h3 className="text-[#f5f0eb] text-xs sm:text-sm font-medium truncate">{item.name}</h3>
-                    <div className="flex flex-wrap gap-x-2 text-[0.65rem] tracking-[0.1em] uppercase text-[#888]">
+                    <h3 className="text-xs sm:text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{item.name}</h3>
+                    <div className="flex flex-wrap gap-x-2 text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: 'var(--text-muted)' }}>
                       <span>Size {item.selectedSize}</span>
-                      <span className="text-[#2e2e2e]">·</span>
+                      <span style={{ color: 'var(--border-color)' }}>·</span>
                       <span className="capitalize">{item.selectedColor}</span>
                     </div>
 
-                    {/* Quantity + price on own row */}
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2e2e2e]">
-                      <div className="flex items-center border border-[#2e2e2e]">
+                    {/* Quantity + price */}
+                    <div className="flex items-center justify-between mt-2 pt-2" style={{ borderTop: '1px solid var(--border-color)' }}>
+                      <div className="flex items-center" style={{ border: '1px solid var(--border-color)' }}>
                         <button
                           onClick={() => updateQuantity(item.id, item.selectedColor, item.selectedSize, item.quantity - 1)}
-                          className="w-7 h-7 sm:w-8 sm:h-8 text-[#888] hover:text-[#f5f0eb] hover:bg-[#2e2e2e] transition-all text-sm cursor-pointer"
+                          className="w-7 h-7 sm:w-8 sm:h-8 hover:text-[#e8530a] transition-all text-sm cursor-pointer"
+                          style={{ color: 'var(--text-muted)' }}
                         >
                           -
                         </button>
-                        <span className="w-7 sm:w-8 text-center text-[#f5f0eb] text-sm font-medium">{item.quantity}</span>
+                        <span className="w-7 sm:w-8 text-center text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.selectedColor, item.selectedSize, item.quantity + 1)}
-                          className="w-7 h-7 sm:w-8 sm:h-8 text-[#888] hover:text-[#f5f0eb] hover:bg-[#2e2e2e] transition-all text-sm cursor-pointer"
+                          className="w-7 h-7 sm:w-8 sm:h-8 hover:text-[#e8530a] transition-all text-sm cursor-pointer"
+                          style={{ color: 'var(--text-muted)' }}
                         >
                           +
                         </button>
                       </div>
-                      <span
-                        className="text-[#f5f0eb]"
-                        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', letterSpacing: '0.05em' }}
-                      >
+                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
                         ₦{(item.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
@@ -130,7 +127,8 @@ export default function CartModal({ isOpen, onClose }) {
                   {/* Remove */}
                   <button
                     onClick={() => removeFromCart(item.id, item.selectedColor, item.selectedSize)}
-                    className="text-[#444] hover:text-red-400 transition-colors self-start cursor-pointer shrink-0 text-sm mt-0.5"
+                    className="hover:text-red-400 transition-colors self-start cursor-pointer shrink-0 text-sm mt-0.5"
+                    style={{ color: 'var(--text-muted)' }}
                     title="Remove item"
                   >
                     x
@@ -139,19 +137,14 @@ export default function CartModal({ isOpen, onClose }) {
               ))}
             </div>
 
-            {/* Footer */}
-            <div className="shrink-0 border-t border-[#1a1a1a] px-5 sm:px-8 py-6 sm:py-8">
-
+            <div className="shrink-0 px-5 sm:px-8 py-6 sm:py-8" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[0.65rem] tracking-[0.25em] uppercase text-[#888]">Subtotal</span>
-                <span
-                  className="text-[#f5f0eb]"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 4vw, 2rem)', letterSpacing: '0.05em' }}
-                >
+                <span className="text-[0.65rem] tracking-[0.25em] uppercase" style={{ color: 'var(--text-muted)' }}>Subtotal</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(1.6rem, 4vw, 2rem)', letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
                   ₦{getCartTotal().toFixed(2)}
                 </span>
               </div>
-              <p className="text-[#444] text-xs mb-6 sm:mb-8 font-light">Shipping and taxes calculated at checkout</p>
+              <p className="text-xs mb-6 sm:mb-8 font-light" style={{ color: 'var(--text-muted)' }}>Shipping and taxes calculated at checkout</p>
 
               <Link
                 href="/checkout"
@@ -163,7 +156,8 @@ export default function CartModal({ isOpen, onClose }) {
 
               <button
                 onClick={onClose}
-                className="w-full bg-transparent text-[#888] py-3 text-xs tracking-[0.2em] uppercase border border-[#2e2e2e] hover:border-[#f5f0eb] hover:text-[#f5f0eb] transition-all cursor-pointer"
+                className="w-full bg-transparent py-3 text-xs tracking-[0.2em] uppercase border hover:border-[#e8530a] hover:text-[#e8530a] transition-all cursor-pointer"
+                style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}
               >
                 Continue Shopping
               </button>
