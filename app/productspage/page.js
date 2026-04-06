@@ -173,7 +173,7 @@ export default function ProductsPage() {
                   <div className="products-grid">
                     {paginatedProducts.map((product, i) => (
                       <div key={product._id} className="animate-fade-up h-full" style={{ animationDelay: i * 50 + 'ms', opacity: 0 }}>
-                        <ProductCard shoe={product} />
+                        <ProductCard shoe={product} priority={i === 0} />
                       </div>
                     ))}
                   </div>

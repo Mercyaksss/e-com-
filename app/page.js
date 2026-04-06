@@ -158,7 +158,7 @@ export default function SoleLanding() {
 
           {/* Mobile hero shoe */}
           <div className="flex md:hidden justify-center my-6">
-            <span className="text-[8rem] animate-float drop-shadow-[0_20px_40px_rgba(232,83,10,0.3)] select-none"><Image src={hero} width={400} height={400} alt='hero-image'/></span>
+            <span className="text-[8rem] animate-float drop-shadow-[0_20px_40px_rgba(232,83,10,0.3)] select-none"><Image src={hero} width={400} height={400} alt='hero-image' priority /></span>
           </div>
 
           <div className="flex items-center gap-4 md:gap-6 flex-wrap">

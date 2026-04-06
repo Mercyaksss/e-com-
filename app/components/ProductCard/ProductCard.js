@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default function ProductCard({ shoe }) {
+export default function ProductCard({ shoe, priority = false }) {
   // New schema: images array + variants for colors
   // Falls back to old schema just in case
   const image = shoe.images?.[0] || shoe.image || '';
@@ -45,11 +46,14 @@ export default function ProductCard({ shoe }) {
         {/* Image */}
         <div className="relative h-64 overflow-hidden bg-[#111]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.12),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-          <img
-            src={image}
-            alt={shoe.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+            <Image
+              src={image}
+              alt={shoe.name}
+              fill
+              sizes="(max-width: 480px) 100vw, (max-width: 1180px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              priority={priority}
+            />
         </div>
 
         {/* Content */}

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
@@ -181,11 +182,14 @@ export default function ProductPage() {
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
               {images.length > 0 && (
-                <img
+               <Image
                   key={activeIndex}
                   src={images[activeIndex]}
                   alt={shoe.name}
-                  className="img-fade w-full h-[300px] sm:h-[400px] md:h-[560px] object-cover group-hover:scale-105 transition-transform duration-700"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="img-fade object-cover group-hover:scale-105 transition-transform duration-700"
+                  priority
                 />
               )}
               <span
