@@ -10,6 +10,7 @@ const PRODUCTS_PER_PAGE = 12;
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchProducts = async (filters = {}) => {
@@ -96,7 +97,7 @@ export default function ProductsPage() {
           >
             SHOP
           </span>
-          <div className="max-w-7xl mx-auto px-6 md:px-14 pt-28 md:pt-36 pb-10 md:pb-16 relative z-10 animate-fade-up">
+          <div className="max-w-7xl mx-auto px-6 md:px-14 pt-24 md:pt-28 pb-8 md:pb-10 relative z-10 animate-fade-up">
             <span className="flex items-center gap-3 text-[#e8530a] text-xs tracking-[0.3em] uppercase mb-4 md:mb-5">
               <span className="w-8 h-px bg-[#e8530a]" />
               All Products
@@ -111,8 +112,24 @@ export default function ProductsPage() {
         <div className="max-w-7xl mx-auto px-6 md:px-14 py-10 md:py-16">
           <div className="page-layout">
 
+            {/* MOBILE FILTER TOGGLE */}
+            <div className="flex items-center justify-between lg:hidden mb-2">
+              <p className="text-[#888] text-sm font-light">
+                {!loading && <span><span className="text-[#f5f0eb] font-medium">{products.length}</span> products</span>}
+              </p>
+              <button
+                onClick={() => setFilterOpen(f => !f)}
+                className="flex items-center gap-2 px-4 py-2.5 border border-[#2e2e2e] text-[#888] hover:border-[#e8530a] hover:text-[#e8530a] transition-all text-xs tracking-[0.15em] uppercase cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 12h10M11 20h2" />
+                </svg>
+                {filterOpen ? 'Hide Filters' : 'Filters'}
+              </button>
+            </div>
+
             {/* SIDEBAR */}
-            <aside className="sidebar-col">
+            <aside className={`sidebar-col ${filterOpen ? 'block' : 'hidden'} lg:block`}>
               <div className="sidebar-inner">
                 <FilterSidebar onFilterChange={handleFilterChange} />
               </div>

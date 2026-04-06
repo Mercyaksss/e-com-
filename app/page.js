@@ -14,12 +14,12 @@ import shoe6 from '../public/shoe6.png';
 
 
 const products = [
-  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 180, badge: 'New', emoji: shoe1, span: false },
-  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 190, badge: null, emoji: shoe2, span: false },
-  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 220, badge: 'Hot', emoji: shoe3, span: false },
-  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 185, badge: null, emoji: shoe4, span: false },
-  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 110, badge: 'Sale', emoji: shoe5, span: false },
-  { id: 6, brand: 'Puma', name: 'RS-X Reinvention', price: 110, badge: 'Sale', emoji: shoe6, span: false },
+  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 18000, badge: 'New', emoji: shoe1, span: false },
+  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 19000, badge: null, emoji: shoe2, span: false },
+  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 22000, badge: 'Hot', emoji: shoe3, span: false },
+  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 18500, badge: null, emoji: shoe4, span: false },
+  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe5, span: false },
+  { id: 6, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe6, span: false },
 
 ];
 
