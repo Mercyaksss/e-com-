@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react';
 
-const ADMIN_CREDENTIALS = { username: 'admin', password: 'sole2025' };
+const ADMIN_CREDENTIALS = { 
+  username: process.env.NEXT_PUBLIC_ADMIN_USERNAME, 
+  password: process.env.NEXT_PUBLIC_ADMIN_PASSWORD 
+};
 
 const STATUS_STYLES = {
   Delivered:  'border-green-500/50 text-green-400',
@@ -827,7 +830,7 @@ export default function AdminPage() {
                                 <p className="text-[#f5f0eb] font-medium text-sm">{p.name}</p>
                                 <p className="text-[#888] text-xs">{p.brand} · {Array.isArray(p.category) ? p.category.join(', ') : p.category}</p>
                               </div>
-                              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#f5f0eb' }}>${p.price}</span>
+                              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', color: '#f5f0eb' }}>₦{p.price}</span>
                             </div>
                             <div className="flex items-center justify-between border-t border-[#1a1a1a] pt-3">
                               <span className={"text-xs font-medium " + (stock <= 5 ? 'text-red-400' : stock <= 15 ? 'text-yellow-400' : 'text-green-400')}>

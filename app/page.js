@@ -177,7 +177,7 @@ export default function SoleLanding() {
         {/* Right — desktop only */}
         <div className="hidden md:flex relative overflow-hidden items-center justify-center">
           <span className="absolute font-bebas text-[28vw] text-white/[0.03] tracking-tight select-none pointer-events-none">SOLE</span>
-          <div className="animate-float text-[22rem] drop-shadow-[0_40px_80px_rgba(232,83,10,0.3)] select-none"><Image src={hero} width={450} height={450} alt='hero-image'/></div>
+          <div className="animate-float text-[22rem] drop-shadow-[0_40px_80px_rgba(232,83,10,0.3)] select-none"><Image src={hero} width={450} height={450} alt='hero-image' priority /></div>
           <span className="absolute bottom-14 right-14 font-bebas text-[8rem] text-white/[0.04] leading-none select-none">01</span>
         </div>
 
