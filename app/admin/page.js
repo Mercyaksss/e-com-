@@ -197,7 +197,7 @@ function ProductModal({ product, onSave, onClose }) {
               <input value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} placeholder="Nike" className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Price ($) *</label>
+              <label className={labelClass}>Price (₦) *</label>
               <input type="number" value={form.price} onChange={e => { setForm(f => ({ ...f, price: e.target.value })); setErrors(p => ({ ...p, price: '' })); }}
                 placeholder="180" className={inputClass + (errors.price ? ' border-red-400/70' : '')} />
               {errors.price && <p className="text-red-400 text-[0.65rem] mt-1">{errors.price}</p>}
@@ -790,7 +790,7 @@ export default function AdminPage() {
                                 <td className="px-5 py-4 text-[#888] text-sm">{p.brand}</td>
                                 <td className="px-5 py-4 text-[#888] text-sm">{Array.isArray(p.category) ? p.category.join(', ') : p.category}</td>
                                 <td className="px-5 py-4">
-                                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>${p.price}</span>
+                                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.1rem', color: '#f5f0eb' }}>₦{p.price}</span>
                                 </td>
                                 <td className="px-5 py-4">
                                   <span className={"text-sm font-medium " + (stock <= 5 ? 'text-red-400' : stock <= 15 ? 'text-yellow-400' : 'text-green-400')}>

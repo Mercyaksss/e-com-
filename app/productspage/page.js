@@ -81,7 +81,7 @@ export default function ProductsPage() {
         @media (min-width: 1180px) { .sidebar-inner { position: sticky; top: 96px; } }
 
         .products-grid { display: grid; gap: 2px; grid-template-columns: 1fr; }
-        @media (min-width: 480px)  { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 554px)  { .products-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1180px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
       `}</style>
 
@@ -102,8 +102,8 @@ export default function ProductsPage() {
               <span className="w-8 h-px bg-[#e8530a]" />
               All Products
             </span>
-            <h1 className="leading-none text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3rem, 9vw, 8rem)' }}>
-              The Full<br /><span className="text-[#e8530a]">Collection</span>
+            <h1 className="leading-none text-[#f5f0eb]" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3rem, 9vw, 6rem)' }}>
+              The Full <span className="text-[#e8530a]">Collection</span>
             </h1>
           </div>
         </div>
