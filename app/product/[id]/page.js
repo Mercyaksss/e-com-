@@ -345,7 +345,7 @@ export default function ProductPage() {
       </main>
       <footer className="py-6 text-center" style={{ backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          Designed & developed by <span className="text-[#e8530a] font-medium">Mercy Yakubu</span>
+          Designed & developed by <a className="text-[#e8530a] font-medium" href='https://mercy-yakubu-frontend-developer.vercel.app/' target="_blank">Mercy Yakubu</a>
         </p>
       </footer>
     </>

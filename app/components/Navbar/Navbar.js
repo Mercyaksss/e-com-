@@ -146,7 +146,7 @@ export default function Navbar() {
 
             {/* Cart button */}
             <button onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer group">
+              className="relative flex items-center gap-2 text-[#888] hover:text-[#e8530a] transition-colors cursor-pointer group">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -160,7 +160,7 @@ export default function Navbar() {
 
             {/* Mobile hamburger */}
             <button onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden flex flex-col gap-1.5 cursor-pointer text-[#888] hover:text-[#f5f0eb] transition-colors">
+              className="md:hidden flex flex-col gap-1.5 cursor-pointer text-[#888] hover:text-[#e8530a] transition-colors">
               <span className={"block w-5 h-px bg-current transition-all duration-300 " + (mobileOpen ? 'rotate-45 translate-y-2' : '')} />
               <span className={"block w-5 h-px bg-current transition-all duration-300 " + (mobileOpen ? 'opacity-0' : '')} />
               <span className={"block w-5 h-px bg-current transition-all duration-300 " + (mobileOpen ? '-rotate-45 -translate-y-2' : '')} />

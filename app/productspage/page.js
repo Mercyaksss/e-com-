@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar/Navbar';
 import ProductCard from '../components/ProductCard/ProductCard';
 import FilterSidebar from '../components/FilterSidebar/FilterSidebar';
@@ -8,13 +9,19 @@ import FilterSidebar from '../components/FilterSidebar/FilterSidebar';
 const PRODUCTS_PER_PAGE = 12;
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterOpen, setFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilters, setActiveFilters] = useState({});
+
+  const searchQuery = searchParams.get('search') || '';
 
   const fetchProducts = async (filters = {}) => {
     setLoading(true);
+    setActiveFilters(filters);
     try {
       const params = new URLSearchParams();
       if (filters.brand)    params.set('brand', filters.brand);
@@ -23,7 +30,7 @@ export default function ProductsPage() {
       if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
       const res = await fetch('/api/products?' + params.toString());
       const data = await res.json();
-      setProducts(data);
+      setAllProducts(data);
     } catch (err) {
       console.error('Failed to fetch products:', err);
     } finally {
@@ -32,6 +39,21 @@ export default function ProductsPage() {
   };
 
   useEffect(() => { fetchProducts(); }, []);
+
+  // Filter by search query on top of existing filters
+  const filteredProducts = searchQuery
+    ? allProducts.filter(p =>
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (Array.isArray(p.category) ? p.category.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())) : p.category?.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : allProducts;
+
+  // Keep products in sync
+  useEffect(() => {
+    setProducts(filteredProducts);
+    setCurrentPage(1);
+  }, [allProducts, searchQuery]);
 
   const handleFilterChange = (filters) => {
     fetchProducts(filters);
@@ -103,7 +125,11 @@ export default function ProductsPage() {
               All Products
             </span>
             <h1 className="leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3rem, 9vw, 6rem)', color: 'var(--text-primary)' }}>
-              The Full <span className="text-[#e8530a]">Collection</span>
+              {searchQuery ? (
+                <>Search: <span className="text-[#e8530a]">{searchQuery}</span></>
+              ) : (
+                <>The Full <span className="text-[#e8530a]">Collection</span></>
+              )}
             </h1>
           </div>
         </div>
@@ -239,6 +265,11 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
+      <footer className="py-6 text-center" style={{ backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          Designed & developed by <a className="text-[#e8530a] font-medium" href='https://mercy-yakubu-frontend-developer.vercel.app/' target="_blank">Mercy Yakubu</a>
+        </p>
+      </footer>
     </>
   );
 }

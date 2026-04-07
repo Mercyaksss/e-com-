@@ -433,7 +433,7 @@ export default function SoleLanding() {
         <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left" style={{ borderColor: 'var(--border-color)' }}>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>© 2025 SOLE. All rights reserved.</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            Designed & developed by <span className="text-[#e8530a] font-medium">Mercy Yakubu</span>
+            Designed & developed by <a className="text-[#e8530a] font-medium" href='https://mercy-yakubu-frontend-developer.vercel.app/' target="_blank">Mercy Yakubu</a>
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Settings'].map(l => (

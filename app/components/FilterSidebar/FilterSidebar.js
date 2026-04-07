@@ -70,7 +70,7 @@ export default function FilterSidebar({ onFilterChange }) {
           <div>
             <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Brand</label>
             <div className="relative">
-              <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
+              <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
                 <option value="">All Brands</option>
                 {brands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
               </select>
@@ -80,7 +80,7 @@ export default function FilterSidebar({ onFilterChange }) {
           <div>
             <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Category</label>
             <div className="relative">
-              <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
+              <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} className={selectClass + " select-arrow"} style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}>
                 <option value="">All Categories</option>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
@@ -93,12 +93,12 @@ export default function FilterSidebar({ onFilterChange }) {
               <input type="number" placeholder="Min" value={priceRange.min}
                 onChange={e => setPriceRange({ ...priceRange, min: e.target.value })}
                 className={inputClass}
-                style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
               <span className="text-sm shrink-0" style={{ color: 'var(--text-muted)' }}>to</span>
               <input type="number" placeholder="Max" value={priceRange.max}
                 onChange={e => setPriceRange({ ...priceRange, max: e.target.value })}
                 className={inputClass}
-                style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
             </div>
           </div>
 

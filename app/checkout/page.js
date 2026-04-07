@@ -16,7 +16,7 @@ const labelClass = `block text-[0.65rem] tracking-[0.25em] uppercase mb-2`;
 const DELIVERY_OPTIONS = [
   { id: 'pickup',          label: 'Store Pickup',           sublabel: 'Pick up at our store',        fee: 0 },
   { id: 'within_kaduna',   label: 'Delivery within Kaduna', sublabel: 'Delivered to your address',   fee: 2000 },
-  { id: 'outside_kaduna',  label: 'Delivery outside Kaduna', sublabel: 'Delivered to your address',  fee: 4000 },
+  // { id: 'outside_kaduna',  label: 'Delivery outside Kaduna', sublabel: 'Delivered to your address',  fee: 4000 },
 ];
 
 function SuccessModal({ order, onClose }) {
@@ -68,10 +68,10 @@ function SuccessModal({ order, onClose }) {
             <p className="text-xs font-light mb-8" style={{ color: 'var(--text-muted)' }}>
               A confirmation will be sent to <span style={{ color: 'var(--text-primary)' }}>{order.email}</span>
             </p>
-            <Link href="/" onClick={onClose}
+            <Link href="/productspage" onClick={onClose}
               className="block w-full bg-[#e8530a] text-white py-4 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors no-underline text-center"
               style={{ clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))' }}>
-              Back to Home
+              Back to Shop
             </Link>
           </div>
         </div>
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
       </main>
       <footer className="py-6 text-center" style={{ backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          Designed & developed by <span className="text-[#e8530a] font-medium">Mercy Yakubu</span>
+          Designed & developed by <a className="text-[#e8530a] font-medium" href='https://mercy-yakubu-frontend-developer.vercel.app/' target="_blank">Mercy Yakubu</a>
         </p>
       </footer>
     </>
