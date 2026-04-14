@@ -10,12 +10,27 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const brand    = searchParams.get('brand');
     const category = searchParams.get('category');
+    const size      = searchParams.get('size');
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
 
     const query = {};
     if (brand)    query.brand    = { $regex: brand, $options: 'i' };
     if (category) query.category = { $in: [category] };
+
+    if (size) {
+      query.variants = {
+        $elemMatch: {
+          sizes: {
+            $elemMatch: {
+              size: Number(size),     
+              stock: { $gt: 0 }
+            }
+          }
+        }
+      };
+    }
+
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);

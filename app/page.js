@@ -10,17 +10,16 @@ import shoe3 from '../public/shoe3.png';
 import shoe4 from '../public/shoe4.png';
 import shoe5 from '../public/shoe5.png';
 import shoe6 from '../public/shoe6.png';
+import { useRouter } from 'next/navigation'; 
 import { useTheme } from './context/ThemeContext';
 
-
-
 const products = [
-  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 18000, badge: 'New', emoji: shoe1, span: false },
-  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 19000, badge: null, emoji: shoe2, span: false },
-  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 22000, badge: 'Hot', emoji: shoe3, span: false },
-  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 18500, badge: null, emoji: shoe4, span: false },
-  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe5, span: false },
-  { id: 6, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe6, span: false },
+  { id: 1, brand: 'Nike', name: 'Air Max 270', price: 18000, badge: 'New', emoji: shoe1, span: false, details: "https://e-com-vert-xi.vercel.app/" },
+  { id: 2, brand: 'Adidas', name: 'Ultra Boost 22', price: 19000, badge: null, emoji: shoe2, span: false, details: "https://e-com-vert-xi.vercel.app/" },
+  { id: 3, brand: 'Jordan', name: 'Air Jordan 1 Retro', price: 22000, badge: 'Hot', emoji: shoe3, span: false, details: "https://e-com-vert-xi.vercel.app/"},
+  { id: 4, brand: 'New Balance', name: '990v5 Made in USA', price: 18500, badge: null, emoji: shoe4, span: false, details: "https://e-com-vert-xi.vercel.app/"},
+  { id: 5, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe5, span: false, details: "https://e-com-vert-xi.vercel.app/" },
+  { id: 6, brand: 'Puma', name: 'RS-X Reinvention', price: 11000, badge: 'Sale', emoji: shoe6, span: false, details: "https://e-com-vert-xi.vercel.app/" },
 
 ];
 
@@ -38,7 +37,7 @@ const features = [
 ];
 
 const brands = ['Nike', 'Adidas', 'Jordan', 'New Balance', 'Puma', 'Asics'];
-const filters = ['All', 'Running', 'Lifestyle', 'Basketball'];
+// const filters = ['All', 'Running', 'Lifestyle', 'Basketball'];
 const marqueeItems = ['Nike', 'Adidas', 'Jordan', 'New Balance', 'Puma', 'Asics', 'Converse', 'Vans', 'Reebok', 'Saucony'];
 
 function useReveal() {
@@ -57,14 +56,25 @@ function useReveal() {
 
 export default function SoleLanding() {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();                    // ← Added here
   const [activeFilter, setActiveFilter] = useState('All');
   const [added, setAdded] = useState({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');   // ← Added here
   const [heroRef, heroVisible] = useReveal();
   const [productsRef, productsVisible] = useReveal();
   const [featuresRef, featuresVisible] = useReveal();
   const [testimonialsRef, testimonialsVisible] = useReveal();
   const [ctaRef, ctaVisible] = useReveal();
+
+  // Search handler
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    router.push(`/productspage?search=${encodeURIComponent(searchQuery.trim())}`);
+    setSearchQuery('');        // clear input after search
+  };
 
   const handleAdd = (id) => {
     setAdded(prev => ({ ...prev, [id]: true }));
@@ -99,8 +109,8 @@ export default function SoleLanding() {
         <div className="flex items-center justify-between px-6 md:px-14 py-5 md:py-7">
           <a href="#" className="font-bebas text-3xl tracking-widest" style={{ color: 'var(--text-primary)' }}>SOLE.</a>
 
-          {/* Desktop links */}
-          <ul className="hidden md:flex gap-10 list-none">
+          {/* Desktop links - hidden below 960px */}
+          <ul className="hidden lg:flex gap-10 list-none">
             {['Shop', 'Brands', 'About', 'Contact'].map(item => (
               <li key={item}>
                 <a href={"#" + item.toLowerCase()} className="text-xs tracking-[0.2em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline" style={{ color: 'var(--text-primary)' }}>
@@ -111,6 +121,34 @@ export default function SoleLanding() {
           </ul>
 
           <div className="flex items-center gap-4">
+
+            {/* Desktop Search Bar - hidden below 960px */}
+            <div className="hidden lg:flex items-center">
+              <form 
+                onSubmit={handleSearch}
+                className="flex items-center border border-transparent focus-within:border-[#e8530a] transition-all duration-300 overflow-hidden"
+                style={{ backgroundColor: 'var(--bg-input)', padding: '4px 10px' }}
+              >
+                <input
+                  type="text"
+                  placeholder="Search shoes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm placeholder:text-[#888] px-3 py-1.5 w-56 focus:outline-none"
+                  style={{ color: 'var(--text-primary)' }}
+                />
+                <button
+                  type="submit"
+                  className="text-[#888] hover:text-[#e8530a] transition-colors p-1"
+                  aria-label="Search"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                  </svg>
+                </button>
+              </form>
+            </div>
+
             {/* Theme toggle */}
             <button onClick={toggleTheme}
               className="text-[#888] hover:text-[#e8530a] transition-colors cursor-pointer"
@@ -127,28 +165,57 @@ export default function SoleLanding() {
               )}
             </button>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden flex flex-col gap-1.5 cursor-pointer p-1"
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label="Toggle menu"
-          >
-            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'rotate-45 translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
-            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'opacity-0' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
-            <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? '-rotate-45 -translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
-          </button>
+            {/* Hamburger - visible below 960px */}
+            <button
+              className="lg:hidden flex flex-col gap-1.5 cursor-pointer p-1"
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label="Toggle menu"
+            >
+              <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'rotate-45 translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
+              <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? 'opacity-0' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
+              <span className={"block w-6 h-px transition-all duration-300 " + (menuOpen ? '-rotate-45 -translate-y-2' : '')} style={{ backgroundColor: 'var(--text-primary)' }} />
+            </button>
           </div>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile Menu (including search) - shown below 960px */}
         {menuOpen && (
-          <div className="md:hidden animate-menu-down backdrop-blur border-t px-6 py-6 flex flex-col gap-5" style={{ backgroundColor: 'var(--overlay)', borderColor: 'var(--border-subtle)' }}>
+          <div className="lg:hidden animate-menu-down backdrop-blur border-t px-6 py-6 flex flex-col gap-6" 
+              style={{ backgroundColor: 'var(--overlay)', borderColor: 'var(--border-subtle)' }}>
+            
+            {/* Mobile Search */}
+            <form 
+              onSubmit={handleSearch}
+              className="flex items-center border border-transparent focus-within:border-[#e8530a] transition-all duration-300 rounded-xl overflow-hidden"
+              style={{ backgroundColor: 'var(--bg-input)', padding: '12px 16px' }}
+            >
+              <input
+                type="text"
+                placeholder="Search shoes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-base placeholder:text-[#888] focus:outline-none"
+                style={{ color: 'var(--text-primary)' }}
+                onKeyDown={(e) => e.key === 'Escape' && setMenuOpen(false)}
+              />
+              <button
+                type="submit"
+                className="text-[#888] hover:text-[#e8530a] transition-colors ml-3"
+                aria-label="Search"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+              </button>
+            </form>
+
+            {/* Mobile Menu Links */}
             {['Shop', 'Brands', 'About', 'Contact'].map(item => (
               <a
                 key={item}
                 href={"#" + item.toLowerCase()}
                 onClick={() => setMenuOpen(false)}
-                className="text-xs tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline"
+                className="text-sm tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity no-underline py-2"
                 style={{ color: 'var(--text-primary)' }}
               >
                 {item}
@@ -157,7 +224,6 @@ export default function SoleLanding() {
           </div>
         )}
       </nav>
-
       {/* HERO */}
       <section className="min-h-screen grid md:grid-cols-2 relative overflow-hidden">
         {/* Left */}
@@ -246,7 +312,14 @@ export default function SoleLanding() {
           </div>
           {/* Filter pills */}
           <div className="flex gap-3 overflow-x-auto pb-1 md:pb-0 md:flex-wrap scrollbar-hide">
-            {filters.map(f => (
+            <Link 
+              href="/productspage"
+              className={"flex-shrink-0 px-5 py-2.5 border text-xs tracking-[0.1em] uppercase transition-all cursor-pointer "}
+              style={{borderColor: 'var(--accent-hover)', color: 'var(--accent-hover)'}}
+            >
+              View all products <span className="text-base"> → </span>
+            </Link>
+            {/* {filters.map(f => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
@@ -255,29 +328,30 @@ export default function SoleLanding() {
               >
                 {f}
               </button>
-            ))}
+            ))} */}
           </div>
         </div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0.5">
           {products.map((p) => (
-            <div
+            <Link
               key={p.id}
               className={"relative overflow-hidden group " + (p.span ? 'sm:col-span-2' : '')}
               style={{ backgroundColor: 'var(--bg-card)' }}
+              href={p.details}
             >
               {p.badge && (
                 <span className="absolute top-4 left-4 z-10 bg-[#e8530a] text-[#f5f0eb] text-[0.65rem] tracking-[0.2em] uppercase px-3 py-1">
                   {p.badge}
                 </span>
               )}
-              <button
+              {/* <button
                 onClick={() => handleAdd(p.id)}
                 className={"absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center text-xl text-white opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-200 cursor-pointer " + (added[p.id] ? 'bg-green-500' : 'bg-[#e8530a]')}
               >
                 {added[p.id] ? '✓' : '+'}
-              </button>
+              </button> */}
               <div className={"flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105 relative " + (p.span ? 'text-[8rem] sm:text-[12rem] aspect-square sm:aspect-[2/1]' : 'text-[7rem] aspect-square')}>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Image src={p.emoji} fill alt={p.name} sizes="(max-width: 768px) 100vw, 50vw" />
@@ -289,7 +363,7 @@ export default function SoleLanding() {
                 </div>
                 <span className="font-bebas text-3xl tracking-wide">₦{p.price}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

@@ -26,8 +26,10 @@ export default function ProductsPage() {
       const params = new URLSearchParams();
       if (filters.brand)    params.set('brand', filters.brand);
       if (filters.category) params.set('category', filters.category);
+      if (filters.size)     params.set('size', filters.size);
       if (filters.minPrice) params.set('minPrice', filters.minPrice);
       if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+
       const res = await fetch('/api/products?' + params.toString());
       const data = await res.json();
       setAllProducts(data);

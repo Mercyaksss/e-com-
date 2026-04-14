@@ -3,22 +3,43 @@
 import { useState, useEffect } from 'react';
 
 export default function FilterSidebar({ onFilterChange }) {
-  const [brands, setBreands] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [sizes, setSizes] = useState([]);              // ← NEW
+
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');   // ← NEW (single value)
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
 
-  // Fetch all products once to extract unique brands and categories
+  // Fetch filter options
   useEffect(() => {
     fetch('/api/products')
       .then(r => r.json())
       .then(products => {
         if (!Array.isArray(products)) return;
+
+        // Brands
         const uniqueBrands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
-        const uniqueCategories = [...new Set(products.flatMap(p => Array.isArray(p.category) ? p.category : [p.category]).filter(Boolean))].sort();
-        setBreands(uniqueBrands);
+        setBrands(uniqueBrands);
+
+        // Categories
+        const uniqueCategories = [...new Set(
+          products.flatMap(p => Array.isArray(p.category) ? p.category : [p.category])
+        )].filter(Boolean).sort();
         setCategories(uniqueCategories);
+
+        // Sizes - only those with stock > 0
+        const availableSizes = products.flatMap(p =>
+          p.variants?.flatMap(v =>
+            v.sizes
+              ?.filter(s => s.stock > 0)
+              .map(s => s.size) || []
+          ) || []
+        );
+
+        const uniqueSizes = [...new Set(availableSizes)].sort((a, b) => a - b);
+        setSizes(uniqueSizes);
       })
       .catch(err => console.error('Failed to fetch filter options:', err));
   }, []);
@@ -27,6 +48,7 @@ export default function FilterSidebar({ onFilterChange }) {
     onFilterChange({
       brand: selectedBrand,
       category: selectedCategory,
+      size: selectedSize,                    // ← NEW (single size)
       minPrice: priceRange.min,
       maxPrice: priceRange.max,
     });
@@ -35,11 +57,12 @@ export default function FilterSidebar({ onFilterChange }) {
   const handleReset = () => {
     setSelectedBrand('');
     setSelectedCategory('');
+    setSelectedSize('');                     // ← NEW
     setPriceRange({ min: '', max: '' });
     onFilterChange({});
   };
 
-  const hasActiveFilters = selectedBrand || selectedCategory || priceRange.min || priceRange.max;
+  const hasActiveFilters = selectedBrand || selectedCategory || selectedSize || priceRange.min || priceRange.max;
 
   const selectClass = "w-full px-4 py-3 text-sm border focus:border-[#e8530a] focus:outline-none transition-colors appearance-none cursor-pointer";
   const inputClass = "w-full px-4 py-3 text-sm border focus:border-[#e8530a] focus:outline-none transition-colors placeholder:text-[#888]";
@@ -67,6 +90,7 @@ export default function FilterSidebar({ onFilterChange }) {
 
         <div className="px-6 py-6 flex flex-col gap-7">
 
+          {/* Brand */}
           <div>
             <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Brand</label>
             <div className="relative">
@@ -77,6 +101,25 @@ export default function FilterSidebar({ onFilterChange }) {
             </div>
           </div>
 
+          {/* Size - Dropdown (Single Select) */}
+          <div>
+            <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Size (EU)</label>
+            <div className="relative">
+              <select 
+                value={selectedSize} 
+                onChange={e => setSelectedSize(e.target.value)} 
+                className={selectClass + " select-arrow"} 
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }}
+              >
+                <option value="">All Sizes</option>
+                {sizes.map(size => (
+                  <option key={size} value={size}>EU {size}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Category */}
           <div>
             <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Category</label>
             <div className="relative">
@@ -87,27 +130,43 @@ export default function FilterSidebar({ onFilterChange }) {
             </div>
           </div>
 
+          {/* Price Range */}
           <div>
             <label className="block text-[0.65rem] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>Price Range (₦)</label>
             <div className="flex items-center gap-2">
-              <input type="number" placeholder="Min" value={priceRange.min}
+              <input 
+                type="number" 
+                placeholder="Min" 
+                value={priceRange.min}
                 onChange={e => setPriceRange({ ...priceRange, min: e.target.value })}
                 className={inputClass}
-                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} 
+              />
               <span className="text-sm shrink-0" style={{ color: 'var(--text-muted)' }}>to</span>
-              <input type="number" placeholder="Max" value={priceRange.max}
+              <input 
+                type="number" 
+                placeholder="Max" 
+                value={priceRange.max}
                 onChange={e => setPriceRange({ ...priceRange, max: e.target.value })}
                 className={inputClass}
-                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} />
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderColor: 'var(--border-color)' }} 
+              />
             </div>
           </div>
 
+          {/* Active Filter Chips */}
           {hasActiveFilters && (
             <div className="flex flex-wrap gap-2">
               {selectedBrand && (
                 <span className="flex items-center gap-1.5 text-[0.65rem] tracking-[0.1em] uppercase border border-[#e8530a] text-[#e8530a] px-2.5 py-1">
                   {selectedBrand}
                   <button onClick={() => setSelectedBrand('')} className="hover:text-white transition-colors cursor-pointer">x</button>
+                </span>
+              )}
+              {selectedSize && (
+                <span className="flex items-center gap-1.5 text-[0.65rem] tracking-[0.1em] uppercase border border-[#e8530a] text-[#e8530a] px-2.5 py-1">
+                  EU {selectedSize}
+                  <button onClick={() => setSelectedSize('')} className="hover:text-white transition-colors cursor-pointer">x</button>
                 </span>
               )}
               {selectedCategory && (
@@ -126,15 +185,19 @@ export default function FilterSidebar({ onFilterChange }) {
           )}
 
           <div className="flex flex-col gap-2 pt-1">
-            <button onClick={handleFilterChange}
+            <button 
+              onClick={handleFilterChange}
               className="w-full bg-[#e8530a] text-white py-3 text-xs tracking-[0.2em] uppercase font-medium hover:bg-[#ff6b2b] transition-colors cursor-pointer"
-              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}>
+              style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+            >
               Apply Filters
             </button>
             {hasActiveFilters && (
-              <button onClick={handleReset}
+              <button 
+                onClick={handleReset}
                 className="w-full bg-transparent py-3 text-xs tracking-[0.2em] uppercase border hover:border-[#e8530a] hover:text-[#e8530a] transition-all cursor-pointer"
-                style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}>
+                style={{ color: 'var(--text-muted)', borderColor: 'var(--border-color)' }}
+              >
                 Clear All
               </button>
             )}

@@ -71,20 +71,22 @@ export default function ProductPage() {
     setSelectedSize(firstAvailable ? firstAvailable.size : '');
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       setSizeError(true);
       setTimeout(() => setSizeError(false), 2000);
       return;
     }
     if (selectedSizeStock === 0) return;
-    addToCart({
+
+    await addToCart({
       ...shoe,
       id: shoe._id,
       image: shoe.images?.[0] || '',
       selectedSize,
       selectedColor,
     });
+
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -275,16 +277,27 @@ export default function ProductPage() {
                       Colour &mdash; <span className="capitalize" style={{ color: 'var(--text-primary)' }}>{selectedColor}</span>
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      {shoe.variants.map(variant => (
-                        <button
-                          key={variant.color}
-                          onClick={() => handleColorChange(variant.color)}
-                          className={"px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer " + (selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 'hover:border-[#e8530a] hover:text-[#e8530a]')}
-                          style={ selectedColor !== variant.color ? { border: '1px solid var(--border-color)', color: 'var(--text-muted)' } : {}}
-                        >
-                          {variant.color}
-                        </button>
-                      ))}
+                      {shoe.variants.map(variant => {
+                        const isAvailable = variant.sizes?.some(s => s.stock > 0);
+                        
+                        return (
+                          <button
+                            key={variant.color}
+                            onClick={() => isAvailable && handleColorChange(variant.color)}
+                            disabled={!isAvailable}
+                            className={`px-4 py-2 text-xs tracking-[0.1em] uppercase transition-all capitalize cursor-pointer 
+                              ${selectedColor === variant.color ? 'bg-[#e8530a] text-white border border-[#e8530a]' : 
+                                isAvailable ? 'hover:border-[#e8530a] hover:text-[#e8530a]' : 'line-through opacity-40 cursor-not-allowed'}`}
+                            style={ 
+                              selectedColor !== variant.color && isAvailable 
+                                ? { border: '1px solid var(--border-color)', color: 'var(--text-muted)' } 
+                                : {}
+                            }
+                          >
+                            {variant.color}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -320,7 +333,7 @@ export default function ProductPage() {
                 </>
               )}
 
-              {!isOutOfStock && (
+              {/* {!isOutOfStock && (
               <div className="mt-6 md:mt-8 pt-6 md:pt-8" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                 <p className="text-[0.65rem] tracking-[0.25em] uppercase mb-4 md:mb-5" style={{ color: 'var(--text-muted)' }}>Product Details</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -337,7 +350,7 @@ export default function ProductPage() {
                   ))}
                 </div>
               </div>
-              )}
+              )} */}
 
             </div>
           </div>
