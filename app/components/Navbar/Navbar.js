@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import CartModal from '../CartModal/CartModal';
@@ -11,15 +11,29 @@ export default function Navbar() {
   const { getCartCount } = useCart();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [mounted, setMounted] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-
-  useEffect(() => setMounted(true), []);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
   const searchInputRef = useRef(null);
+
+  useEffect(() => setMounted(true), []);
+
+  // Sync with URL and auto-open when there is a search
+  useEffect(() => {
+    const query = searchParams.get('search') || '';
+    setSearchQuery(query);
+    
+    // If there's a search term in URL, open the search bar
+    if (query) {
+      setSearchOpen(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -37,8 +51,14 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
+
     router.push('/productspage?search=' + encodeURIComponent(searchQuery.trim()));
+    // Do NOT close searchOpen here — keep it open so x is visible
+  };
+
+  const clearSearch = () => {
     setSearchQuery('');
+    router.push('/productspage');
     setSearchOpen(false);
     setMobileOpen(false);
   };
@@ -92,23 +112,39 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-4 md:gap-5">
 
-            {/* Search — desktop inline, mobile icon */}
+            {/* Desktop Search */}
             <div className="hidden md:flex items-center gap-2">
               <form onSubmit={handleSearch} className="flex items-center">
                 <div className={"flex items-center border transition-all duration-300 overflow-hidden " + (searchOpen ? 'border-[#e8530a]' : 'border-transparent')}
                   style={{ backgroundColor: searchOpen ? 'var(--bg-input)' : 'transparent' }}>
+
                   {searchOpen && (
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Search shoes..."
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                      className="bg-transparent text-xs placeholder:text-[#888] px-3 py-1.5 w-44 focus:outline-none animate-search-expand"
-                      style={{ color: 'var(--text-primary)' }}
-                    />
+                    <>
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Search shoes..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
+                        className="bg-transparent text-xs placeholder:text-[#888] px-3 py-1.5 w-52 focus:outline-none animate-search-expand"
+                        style={{ color: 'var(--text-primary)' }}
+                      />
+
+                      {/* Clear Button */}
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={clearSearch}
+                          className="text-[#888] hover:text-[#e8530a] transition-colors px-2 py-1.5 font-medium"
+                          aria-label="Clear search"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </>
                   )}
+
                   <button
                     type={searchOpen ? 'submit' : 'button'}
                     onClick={() => !searchOpen && setSearchOpen(true)}
@@ -121,7 +157,6 @@ export default function Navbar() {
                   </button>
                 </div>
               </form>
-              {/* Click outside to close */}
               {searchOpen && <div className="fixed inset-0 z-[-1]" onClick={() => setSearchOpen(false)} />}
             </div>
 
@@ -172,9 +207,11 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="md:hidden animate-slide-down border-t px-6 py-6 flex flex-col gap-5"
             style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
+            
             {/* Mobile search */}
-            <form onSubmit={handleSearch} className="flex items-center border focus-within:border-[#e8530a] transition-colors"
+            <form onSubmit={handleSearch} className="flex items-center border focus-within:border-[#e8530a] transition-colors relative"
               style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--border-color)' }}>
+              
               <input
                 type="text"
                 placeholder="Search shoes..."
@@ -183,6 +220,18 @@ export default function Navbar() {
                 className="flex-1 bg-transparent text-sm placeholder:text-[#888] px-4 py-3 focus:outline-none"
                 style={{ color: 'var(--text-primary)' }}
               />
+
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="text-[#888] hover:text-[#e8530a] transition-colors px-4 text-lg leading-none"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+
               <button type="submit" className="px-4 text-[#888] hover:text-[#f5f0eb] transition-colors cursor-pointer">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />

@@ -73,7 +73,6 @@ export default function SoleLanding() {
     if (!searchQuery.trim()) return;
 
     router.push(`/productspage?search=${encodeURIComponent(searchQuery.trim())}`);
-    setSearchQuery('');        // clear input after search
   };
 
   const handleAdd = (id) => {

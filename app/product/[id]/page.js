@@ -1,5 +1,5 @@
 'use client';
-
+import cloudinaryLoader from '../../../lib/cloudinaryLoader';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -188,12 +188,12 @@ export default function ProductPage() {
               {images.length > 0 && (
                <Image
                   key={activeIndex}
-                  src={images[activeIndex]}
+                  src={`${images[activeIndex]}?w=1200&q=85&f=auto&c=limit`}
                   alt={shoe.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="img-fade object-cover group-hover:scale-105 transition-transform duration-700"
-                  priority
+                  priority={activeIndex === 0}
                 />
               )}
               <span

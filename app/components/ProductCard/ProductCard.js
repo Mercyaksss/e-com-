@@ -1,23 +1,20 @@
 'use client';
 
+import cloudinaryLoader from '../../../lib/cloudinaryLoader';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function ProductCard({ shoe, priority = false }) {
-  // New schema: images array + variants for colors
-  // Falls back to old schema just in case
   const image = shoe.images?.[0] || shoe.image || '';
   const colors = shoe.variants ? shoe.variants.map(v => v.color) : (shoe.colors || []);
   const id = shoe._id || shoe.id;
 
-  // Calculate total stock across all variants and sizes
   const totalStock = shoe.variants
     ? shoe.variants.reduce((sum, v) => sum + v.sizes.reduce((s, sz) => s + sz.stock, 0), 0)
     : 0;
 
   const isOutOfStock = totalStock === 0;
 
-  // Stock badge logic — takes priority over shoe.badge
   const getStockBadge = () => {
     if (totalStock === 0) return { label: 'Out of Stock', color: 'bg-[#333] text-[#888]' };
     if (totalStock === 1) return { label: 'Only 1 left 🔥', color: 'bg-red-500/90 text-white' };
@@ -30,9 +27,10 @@ export default function ProductCard({ shoe, priority = false }) {
 
   return (
     <Link href={`/product/${id}`}>
-      <div className={`group overflow-hidden relative cursor-pointer h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`} style={{ backgroundColor: 'var(--bg-card)' }}>
+      <div className={`group overflow-hidden relative cursor-pointer h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`} 
+           style={{ backgroundColor: 'var(--bg-card)' }}>
 
-        {/* Badge — stock badge takes priority over shoe.badge */}
+        {/* Badge */}
         {stockBadge ? (
           <span className={`absolute top-4 left-4 z-10 text-[0.65rem] tracking-[0.2em] uppercase px-3 py-1 ${stockBadge.color}`}>
             {stockBadge.label}
@@ -46,14 +44,15 @@ export default function ProductCard({ shoe, priority = false }) {
         {/* Image */}
         <div className="relative h-64 overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(232,83,10,0.12),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-            <Image
-              src={image}
-              alt={shoe.name}
-              fill
-              sizes="(max-width: 480px) 100vw, (max-width: 1180px) 50vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              priority={priority}
-            />
+          
+          <Image
+            src={`${image}?w=800&q=75&f=auto&c=limit`}
+            alt={shoe.name}
+            fill
+            sizes="(max-width: 480px) 100vw, (max-width: 1180px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            priority={priority}
+          />
         </div>
 
         {/* Content */}
@@ -64,16 +63,15 @@ export default function ProductCard({ shoe, priority = false }) {
           </h3>
           <p className="text-sm mb-4 line-clamp-2 font-light leading-relaxed" style={{ color: 'var(--text-muted)' }}>{shoe.description}</p>
 
-          {/* Color tags */}
           <div className="flex flex-wrap gap-2 mb-5">
             {colors.slice(0, 3).map((color, i) => (
-              <span key={i} className="text-[0.65rem] tracking-[0.1em] uppercase px-2.5 py-1" style={{ border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
+              <span key={i} className="text-[0.65rem] tracking-[0.1em] uppercase px-2.5 py-1" 
+                    style={{ border: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
                 {color}
               </span>
             ))}
           </div>
 
-          {/* Price + CTA */}
           <div className="flex items-center justify-between mt-auto">
             <span className="text-2xl tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif", color: 'var(--text-primary)' }}>
               ₦{shoe.price}
