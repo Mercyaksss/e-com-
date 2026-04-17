@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '../../context/CartContext';
 import Navbar from '../../components/Navbar/Navbar';
+import { Suspense } from 'react';
 
 export default function ProductPage() {
   const params = useParams();
@@ -109,7 +110,9 @@ export default function ProductPage() {
   if (loading) {
     return (
       <>
-        <Navbar />
+        <Suspense fallback={<div className="h-20 bg-background" />}>
+          <Navbar />
+        </Suspense>
         <main className="min-h-screen pt-36" style={{ backgroundColor: 'var(--bg-primary)' }}>
           <div className="max-w-7xl mx-auto px-6 md:px-14">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">

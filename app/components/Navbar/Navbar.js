@@ -24,15 +24,11 @@ export default function Navbar() {
 
   useEffect(() => setMounted(true), []);
 
-  // Sync with URL and auto-open when there is a search
+  // Read search from URL
   useEffect(() => {
     const query = searchParams.get('search') || '';
     setSearchQuery(query);
-    
-    // If there's a search term in URL, open the search bar
-    if (query) {
-      setSearchOpen(true);
-    }
+    if (query) setSearchOpen(true);   // Auto-open when there's a search
   }, [searchParams]);
 
   useEffect(() => {
@@ -41,7 +37,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Focus input when search opens
   useEffect(() => {
     if (searchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
@@ -51,9 +46,7 @@ export default function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
     router.push('/productspage?search=' + encodeURIComponent(searchQuery.trim()));
-    // Do NOT close searchOpen here — keep it open so x is visible
   };
 
   const clearSearch = () => {
@@ -65,7 +58,7 @@ export default function Navbar() {
 
   return (
     <>
-      <style>{`
+<style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
         @keyframes slide-down {
           from { opacity: 0; transform: translateY(-8px); }

@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 const PaystackButton = dynamic(() => import('./PaystackButton'), { ssr: false });
 import Navbar from '../components/Navbar/Navbar';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 // export const dynamic = 'force-dynamic';
 
@@ -209,7 +210,9 @@ export default function CheckoutPage() {
 
       {successOrder && <SuccessModal order={successOrder} onClose={() => setSuccessOrder(null)} />}
 
-      <Navbar />
+      <Suspense fallback={<div className="h-20 bg-background" />}>
+        <Navbar />
+      </Suspense>
 
       <main className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-primary)' }}>
 

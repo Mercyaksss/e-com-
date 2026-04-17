@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar/Navbar';
 import ProductCard from '../components/ProductCard/ProductCard';
 import FilterSidebar from '../components/FilterSidebar/FilterSidebar';
+import { Suspense } from 'react';
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -109,7 +110,9 @@ export default function ProductsPage() {
         @media (min-width: 1180px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
       `}</style>
 
-      <Navbar />
+      <Suspense fallback={<div className="h-20 bg-background" />}>
+        <Navbar />
+      </Suspense>
 
       <main className="min-h-screen" style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: 'var(--bg-primary)' }}>
 

@@ -87,7 +87,7 @@ function LoginScreen({ onLogin }) {
             </button>
           </div>
         </form>
-        <p className="text-center text-[#444] text-xs mt-6 font-light">Default: admin / sole2025</p>
+        <p className="text-center text-[#444] text-xs mt-6 font-light">Admin only</p>
       </div>
     </div>
   );
