@@ -92,7 +92,6 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-10">
             {[
               { label: 'Home', href: '/' },
-              { label: 'Shop', href: '/productspage' },
             ].map(({ label, href }) => (
               <Link key={label} href={href}
                 className="hover:text-[#e8530a] transition-colors text-xs tracking-[0.2em] uppercase no-underline"
@@ -233,9 +232,7 @@ export default function Navbar() {
             </form>
 
             {[
-              { label: 'Shop', href: '/productspage' },
-              { label: 'Brands', href: '#' },
-              { label: 'About', href: '#' },
+              { label: 'Home', href: '/' },
             ].map(({ label, href }) => (
               <Link key={label} href={href} onClick={() => setMobileOpen(false)}
                 className="hover:text-[#e8530a] transition-colors text-xs tracking-[0.2em] uppercase no-underline"
